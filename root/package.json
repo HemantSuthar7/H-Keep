@@ -1,0 +1,22 @@
+{
+  "name": "h-keep",
+  "version": "1.0.0",
+  "description": "H-Keep, a google keep alike is my first full stack MERN project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "H-Keep",
+    "MERN",
+    "fullstack",
+    "frontend",
+    "backend",
+    "javascript"
+  ],
+  "author": "HEMANT SUTHAR",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
