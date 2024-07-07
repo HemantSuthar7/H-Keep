@@ -1,6 +1,6 @@
-import mongoose , {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const NoteSchema = new Schema({
+const NoteWithImageSchema = new Schema({
     title: {
         type: String,
         required: [true,"Title is required"]
@@ -20,8 +20,11 @@ const NoteSchema = new Schema({
     labelCategory: {
         type: Schema.Types.ObjectId,
         ref: "Label"
+    },
+    imageUrl: {
+        type: String, // Cloudinary URL
+        required: [true, "Image is required"]
     }
-
 },{timestamps:true});
 
-export const Note = mongoose.model("Note", NoteSchema);
+export const NoteWithImage = mongoose.model("NoteWithImage", NoteWithImageSchema);

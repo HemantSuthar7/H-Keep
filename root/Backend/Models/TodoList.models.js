@@ -1,21 +1,23 @@
 import mongoose , {Schema} from "mongoose";
 
-const NoteSchema = new Schema({
+const todoListSchema = new Schema({
     title: {
         type: String,
-        required: [true,"Title is required"]
+        required: true,
+        maxlength: 100,
     },
-    textContent: {
-        type: String,
+    todoItems:{
+        type: Schema.Types.ObjectId,
+        ref: "TodoItem"
+    },
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
     },
     color: {
         type: String,
         uppercase: true,
         enum : ["#F5D3B0","#256377","#0C625D","#264D3B","#77172E","#284255","#472E5B","#6C394F","#692B17","#7C4A03","#4B443A","#232427"]
-    },
-    createdBy:{
-        type: Schema.Types.ObjectId,
-        ref: "User"
     },
     labelCategory: {
         type: Schema.Types.ObjectId,
@@ -24,4 +26,4 @@ const NoteSchema = new Schema({
 
 },{timestamps:true});
 
-export const Note = mongoose.model("Note", NoteSchema);
+export const TodoList = mongoose.model("TodoList", todoListSchema);
