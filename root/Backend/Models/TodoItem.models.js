@@ -13,6 +13,6 @@ const TodoItemsSchema = new Schema({
         type: Number,
         required: [true, "index number is required"]
     }
-},{timestamps:true});
+});
 
 export const TodoItem = mongoose.model("TodoItem", TodoItemsSchema);
