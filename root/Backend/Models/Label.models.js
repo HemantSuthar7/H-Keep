@@ -4,6 +4,7 @@ const LabelSchema = new Schema({
     LabelName: {
         type: String,
         maxlength: 100,
+        required: [true, "Label name is required"]
     },
     createdBy:{
         type: Schema.Types.ObjectId,

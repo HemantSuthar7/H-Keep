@@ -8,7 +8,8 @@ const todoListSchema = new Schema({
     },
     todoItems:{
         type: Schema.Types.ObjectId,
-        ref: "TodoItem"
+        ref: "TodoItem",
+        required: [true,"List items are required"]
     },
     createdBy: {
         type: Schema.Types.ObjectId,

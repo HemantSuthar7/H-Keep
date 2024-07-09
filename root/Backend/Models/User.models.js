@@ -8,6 +8,7 @@ const userSchema = new Schema({
         lowercase: true,
         unique: true,
         trim:true,
+        index: true
     },
     password:{
         type: String,
@@ -17,8 +18,16 @@ const userSchema = new Schema({
         type: String,
         required: [true,"Email is required"],
         unique: true,
-        lowecase: true,
+        lowercase: true,
         trim: true,
+        index: true
+    },
+    // think about fullname
+    fullName: {
+        type: String,
+        required: [true,"Email is required"],
+        trim: true,
+        index: true
     }
 },{timestamps:true});
 

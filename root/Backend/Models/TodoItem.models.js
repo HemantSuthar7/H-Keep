@@ -3,6 +3,7 @@ import mongoose , {Schema} from "mongoose";
 const TodoItemsSchema = new Schema({
     todoText: {
         type: String,
+        required: [true, "Content is required in list"]
 
     },
     todoListId:{
@@ -11,7 +12,7 @@ const TodoItemsSchema = new Schema({
     },
     indexNum: {
         type: Number,
-        required: [true, "index number is required"]
+        required: [true, "index number is required for ordering purpose"]
     }
 });
 
