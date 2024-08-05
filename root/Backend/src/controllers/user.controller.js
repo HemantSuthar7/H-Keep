@@ -48,17 +48,18 @@ const registerUser = asyncHandler( async (req, res) => {
     // get the user detials
     const {username, password, email, fullName} = req.body;
 
-
+    
     // validation for empty values
     if(
-        [username, password, email, fullName].some( (field) => field.trim() === "" ) 
+        [username, password, email, fullName].some( (field) => field?.trim() === "" ) 
     ){
         throw new ApiError(400, "You cannot provide empty fields")
     }
 
+
     // set email & username to lowercase
     const lowerEmail = email.toLowerCase();
-    const lowerUsername = username.toLowerCase()
+    const lowerUsername = username.toLowerCase();
 
 
     // Validate email pattern
@@ -71,11 +72,13 @@ const registerUser = asyncHandler( async (req, res) => {
 
     const matchedEmail = emailToBeMatched[0]
 
-
+    
     // Check if the user already exists:
     const existedUser = await User.findOne({
-        $or : [{lowerUsername},{matchedEmail}]
+        $or : [{username : lowerUsername},{email : matchedEmail}]
     })
+
+    console.log(existedUser)
 
 
     if (existedUser) {
@@ -309,7 +312,7 @@ const refreshAccessToken = asyncHandler( async (req, res) => {
 
 // export all user methods
 export {
-    registerUser,
+    registerUser, // TESTING ==> SUCCESSFULL
     loginUser,
     logoutUser,
     refreshAccessToken,

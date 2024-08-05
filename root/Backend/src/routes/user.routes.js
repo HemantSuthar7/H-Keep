@@ -1,4 +1,4 @@
-import {router} from "express"
+import {Router} from "express"
 
 import {
             registerUser,
@@ -9,7 +9,7 @@ import {
 
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
-const userRouter = router();
+const userRouter = Router();
 
 
 // routes declaration
