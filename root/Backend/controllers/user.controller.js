@@ -2,6 +2,7 @@ import {User} from "../Models/User.models.js"
 import {asyncHandler} from "../utils/ascyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
+import JWT from "jsonwebtoken"
 
 
 /* SOME METHODS TO WRITE :
@@ -205,6 +206,8 @@ const loginUser = asyncHandler( async (req, res) => {
     
 });
 
+
+
 const logoutUser = asyncHandler( async (req, res) => {
 
     // logout logic :
@@ -248,9 +251,66 @@ const logoutUser = asyncHandler( async (req, res) => {
 } )
 
 
+const refreshAccessToken = asyncHandler( async (req, res) => {
+
+    const incomingRefreshToken = req.cookie.RefreshToken || req.body.RefreshToken
+
+    if(!incomingRefreshToken){
+        throw new ApiError(400, "Refresh token not found")
+    }
+
+    try {
+        
+        const decodedToken = JWT.verify(
+            incomingRefreshToken, 
+            process.env.REFRESH_TOKEN_SECRET
+        )
+
+        const user = await User.findById(decodedToken?._id)
+
+        if(!user){
+            throw new ApiError(400, "Invalid refresh Token")
+        }
+
+        if(incomingRefreshToken !== user?.refreshToken){
+            throw new ApiError(400, "Refresh token is invalid or expired")
+        }
+
+        // generate new refresh token
+        const {accessToken, newRefreshToken} = await generateAccessAndRefreshToken(user._id)
+
+        const cookieOptions = {
+            httpOnly : true,
+            secure : true
+        }
+
+        return res
+        .status(200)
+        .cookie("AccessToken", accessToken, cookieOptions)
+        .cookie("RefreshToken", newRefreshToken, cookieOptions)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    accessToken,
+                    refreshToken : newRefreshToken
+                },
+                "Access Token Refresh Successfully"
+            )
+        )
+
+    } catch (error) {
+        throw new ApiError(400, error?.message || "Invalid Refresh Token")
+    }
+
+
+} )
+
+
 // export all user methods
 export {
     registerUser,
     loginUser,
     logoutUser,
+    refreshAccessToken,
 }
