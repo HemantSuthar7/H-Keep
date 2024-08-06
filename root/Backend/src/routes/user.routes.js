@@ -6,6 +6,7 @@ import {
             logoutUser,
             refreshAccessToken,
             changeCurrentPassword,
+            getCurrentUser,
         } from "../controllers/user.controller.js"
 
 import { verifyJWT } from "../middlewares/auth.middleware.js"
@@ -23,6 +24,8 @@ userRouter.route("/logout").post(verifyJWT, logoutUser);
 userRouter.route("/refresh-access-token").post(refreshAccessToken);
 
 userRouter.route("/change-password").post(verifyJWT, changeCurrentPassword)
+
+userRouter.route("/get-current-user").post(verifyJWT, getCurrentUser)
 
 
 

@@ -353,6 +353,25 @@ const changeCurrentPassword = asyncHandler( async (req, res) => {
 } )
 
 
+const getCurrentUser = asyncHandler( async (req, res) => {
+    
+    const user = req.user
+
+    if(!user){
+        throw new ApiError(400, "Unauthorized request for retreiving user details")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {user : user},
+            "User details retreived successfully"
+        )    )
+
+} )
+
 
 // export all user methods
 export {
@@ -360,5 +379,7 @@ export {
     loginUser,  // TESTING ==> SUCCESSFULL
     logoutUser, // TESTING ==> SUCCESSFULL
     refreshAccessToken, // TESTING ==> SUCCESSFULL
-    changeCurrentPassword, // TESTING ==> PENDING 
+    changeCurrentPassword, // TESTING ==> SUCCESSFULL 
+    getCurrentUser, // TESTING ==> SUCCESSFULL
+    // updateAccountDetails
 }
