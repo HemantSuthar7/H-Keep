@@ -373,6 +373,89 @@ const getCurrentUser = asyncHandler( async (req, res) => {
 } )
 
 
+const updateAccountDetails = asyncHandler( async (req, res) => {
+    
+    // ⚠⚠⚠ ❌🚫⭕🚫 !!!!!!! WARNING !!!!!!! : When suppling the values of email or fullName from frontend, please make sure if the user does not provides any of either values then set the other value as null by default ⚠⚠
+
+    const {email, fullName} = req.body;
+
+    if(
+        [email, fullName].some( (field) => field?.trim() === "" )
+    ){
+        throw new ApiError(400, "You cannot provide empty values")
+    }
+
+
+    if(!email && !fullName){
+        throw new ApiError(400, "Please provide either email or fullName")
+    }
+
+
+    if(email){
+        const pattern = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}";
+        const emailToBeMatched = email.match(pattern);
+    
+        if (emailToBeMatched === null) {
+        throw new ApiError(400, "Email pattern is Invalid")
+        }
+
+        const matchedEmail = emailToBeMatched[0]
+
+        var userE = await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $set : {
+                    email : matchedEmail
+                }
+            },
+            {
+                new: true
+            }
+        ).select("-password -refreshToken")
+    
+        if(!userE){
+            throw new ApiError(500, "There was an error while updating the user details")
+        }
+    }
+
+
+    if(fullName){
+        var userF = await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $set : {
+                    fullName : fullName
+                }
+            },
+            {
+                new: true
+            }
+        ).select("-password -refreshToken")
+    
+        if(!userF){
+            throw new ApiError(500, "There was an error while updating the user details")
+        }
+    }
+
+    
+    
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                userEmailDetails : userE || req.user,
+                userFullnameDetails : userF || req.user
+            },
+            "User details updated successfully"
+        )
+    )
+
+} )
+
+
 // export all user methods
 export {
     registerUser, // TESTING ==> SUCCESSFULL
@@ -381,5 +464,5 @@ export {
     refreshAccessToken, // TESTING ==> SUCCESSFULL
     changeCurrentPassword, // TESTING ==> SUCCESSFULL 
     getCurrentUser, // TESTING ==> SUCCESSFULL
-    // updateAccountDetails
+    updateAccountDetails, // TESTING ==> SUCCESSFULL
 }
