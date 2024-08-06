@@ -5,6 +5,7 @@ import {
             loginUser,
             logoutUser,
             refreshAccessToken,
+            changeCurrentPassword,
         } from "../controllers/user.controller.js"
 
 import { verifyJWT } from "../middlewares/auth.middleware.js"
@@ -19,7 +20,9 @@ userRouter.route("/login").post(loginUser);
 
 userRouter.route("/logout").post(verifyJWT, logoutUser);
 
-userRouter.route("/refresh-access-token").post(refreshAccessToken)
+userRouter.route("/refresh-access-token").post(refreshAccessToken);
+
+userRouter.route("/change-password").post(verifyJWT, changeCurrentPassword)
 
 
 
