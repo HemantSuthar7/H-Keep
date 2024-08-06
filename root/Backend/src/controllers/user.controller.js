@@ -78,8 +78,6 @@ const registerUser = asyncHandler( async (req, res) => {
         $or : [{username : lowerUsername},{email : matchedEmail}]
     })
 
-    console.log(existedUser)
-
 
     if (existedUser) {
         throw new ApiError(409, "The user with this username or email already exists")
@@ -143,24 +141,32 @@ const loginUser = asyncHandler( async (req, res) => {
 
 
     // set email & username to lowercase
-    const lowerEmail = email.toLowerCase();
-    const lowerUsername = username.toLowerCase()
-
-
-    // Validate email pattern
-    const pattern = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}";
-    const emailToBeMatched = lowerEmail.match(pattern);
-    
-    if (emailToBeMatched === null) {
-        throw new ApiError(400, "Email pattern is Invalid")
+    if(username){
+        var lowerUsername = username.toLowerCase();
     }
 
-    const matchedEmail = emailToBeMatched[0]
+
+    if(email){
+        var lowerEmail = email.toLowerCase();
+
+        // Validate email pattern
+        var pattern = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}";
+        var emailToBeMatched = lowerEmail?.match(pattern);
+
+        if (emailToBeMatched === null) {
+            throw new ApiError(400, "Email pattern is Invalid");
+        };
+    
+        var matchedEmail = emailToBeMatched[0];
+    };
+    
+    
 
     // find the user in the database 
-    const existingUser = User.findOne({
-        $or : [{lowerUsername},{matchedEmail}]
+    const existingUser = await User.findOne({
+        $or : [{username : lowerUsername},{email : matchedEmail}]
     })
+    
 
     if(!existingUser){
         throw new ApiError(400, "The user does not exists, Please register yourself first !")
@@ -168,7 +174,8 @@ const loginUser = asyncHandler( async (req, res) => {
 
 
     // if user exists already, check the provided password
-    const passwordCheck = existingUser.isPasswordCorrect(password);
+    const passwordCheck = await existingUser.isPasswordCorrect(password);
+    
 
     if(!passwordCheck){
         throw new ApiError(401, "Password is incorrect !")
@@ -184,9 +191,9 @@ const loginUser = asyncHandler( async (req, res) => {
     // send cookie
 
     // first bring the loggedIn user from db
-    const loggedInUser = await User.findById(existingUser._id).select("-password, -refreshToken")
+    const loggedInUser = await User.findById(existingUser._id).select("-password -refreshToken")
 
-    cookieOptions = {
+    const cookieOptions = {
         httpOnly : true,
         secure : true
     }
@@ -211,11 +218,13 @@ const loginUser = asyncHandler( async (req, res) => {
 
 
 
-const logoutUser = asyncHandler( async (req, res) => {
+const logoutUser = asyncHandler( async (req, res,) => {
 
     // logout logic :
     // 1. get the userdetails from db and set the refreshtoken value to empty
     // 2. if successfull, then send response and clear the existing cookies
+
+    console.log("logout is running")
 
     const updatedUser =  await User.findByIdAndUpdate(
         req.user._id,
@@ -256,7 +265,7 @@ const logoutUser = asyncHandler( async (req, res) => {
 
 const refreshAccessToken = asyncHandler( async (req, res) => {
 
-    const incomingRefreshToken = req.cookie.RefreshToken || req.body.RefreshToken
+    const incomingRefreshToken = req.cookies.RefreshToken || req.body.RefreshToken
 
     if(!incomingRefreshToken){
         throw new ApiError(400, "Refresh token not found")
@@ -313,7 +322,7 @@ const refreshAccessToken = asyncHandler( async (req, res) => {
 // export all user methods
 export {
     registerUser, // TESTING ==> SUCCESSFULL
-    loginUser,
-    logoutUser,
-    refreshAccessToken,
+    loginUser,  // TESTING ==> SUCCESSFULL
+    logoutUser, // TESTING ==> SUCCESSFULL
+    refreshAccessToken, // TESTING ==> SUCCESSFULL
 }

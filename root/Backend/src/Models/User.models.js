@@ -29,6 +29,9 @@ const userSchema = new Schema({
         required: [true,"Fullname is required"],
         trim: true,
         index: true
+    },
+    refreshToken:{
+        type: String
     }
 },{timestamps:true});
 

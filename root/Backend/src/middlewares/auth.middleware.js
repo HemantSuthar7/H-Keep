@@ -4,8 +4,10 @@ import jwt from "jsonwebtoken"
 import { User } from "../Models/User.models.js";
 
 
-export const verifyJWT = asyncHandler( async (req, _, next) => {
+
+export const verifyJWT = asyncHandler( async (req, res, next) => {
     try {
+        console.log("verifyJWT is running")
         const token =  req.cookies?.AccessToken || req.header("Authorization")?.replace("Bearer ","");
     
         if(!token){
@@ -24,6 +26,7 @@ export const verifyJWT = asyncHandler( async (req, _, next) => {
         req.user = user;
         next()
     } catch (error) {
+        console.log("Error from verifyJWT")
         throw new ApiError(500, error?.message || "Something went wrong while verifying JWT")
     }
 
