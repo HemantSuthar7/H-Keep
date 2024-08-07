@@ -7,9 +7,14 @@ const todoListSchema = new Schema({
         maxlength: 100, 
     },
     todoItems:{
-        type: Schema.Types.ObjectId,
-        ref: "TodoItem",
-        required: [true,"List items are required"]
+        type: [String],
+        required: [true, "Content is required in list"],
+        validate: {
+            validator: function(v){
+                return v.every(item => item.length <= 150);
+            },
+            message: props => "Each todo item should not exceed 150 characters in length"
+        }
     },
     createdBy: {
         type: Schema.Types.ObjectId,
@@ -17,7 +22,7 @@ const todoListSchema = new Schema({
     },
     color: {
         type: String,
-        required: [true, "Color is required"],
+        required: [true, "Color is required"], // pass in default value if user does not selects any color
         uppercase: true,
         enum : ["#F5D3B0","#256377","#0C625D","#264D3B","#77172E","#284255","#472E5B","#6C394F","#692B17","#7C4A03","#4B443A","#232427"]
     },
