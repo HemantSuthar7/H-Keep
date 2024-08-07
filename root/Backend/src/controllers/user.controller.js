@@ -222,9 +222,7 @@ const logoutUser = asyncHandler( async (req, res,) => {
 
     // logout logic :
     // 1. get the userdetails from db and set the refreshtoken value to empty
-    // 2. if successfull, then send response and clear the existing cookies
-
-    console.log("logout is running")
+    // 2. if successfull, then send response and clear the existing cookie
 
     const updatedUser =  await User.findByIdAndUpdate(
         req.user._id,
@@ -239,7 +237,7 @@ const logoutUser = asyncHandler( async (req, res,) => {
     )
 
     if(!updatedUser){
-        throw new ApiError(500, "Something went wrong while updating the user refresh token")
+        throw new ApiError(500, "Something went wrong while unsetting user refresh token in logout method")
     }
 
     const cookieOptions = {

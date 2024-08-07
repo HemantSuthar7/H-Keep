@@ -29,6 +29,9 @@ const todoListSchema = new Schema({
     labelCategory: {
         type: Schema.Types.ObjectId,
         ref: "Label"
+    },
+    imageUrl: {
+        type: String, // Cloudinary URL
     }
 
 },{timestamps:true});
