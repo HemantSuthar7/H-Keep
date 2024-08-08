@@ -3,10 +3,13 @@ import mongoose , {Schema} from "mongoose";
 const NoteSchema = new Schema({
     title: {
         type: String,
-        required: [true,"Title is required"] // pass in a default values from controller if no title passed by user
+        required: [true,"Title is required"], // pass in a default values from controller if no title passed by user
+        maxLength : 150
     },
     textContent: {
         type: String,
+        required: [true,"text-content is required"],
+        maxLength : 50000
     },
     color: {
         type: String,
