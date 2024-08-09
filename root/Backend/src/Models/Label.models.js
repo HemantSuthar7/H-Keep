@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const LabelSchema = new Schema({
-    LabelName: {
+    labelName: {
         type: String,
         maxlength: 100,
         required: [true, "Label name is required"]

@@ -71,10 +71,6 @@ const createNote = asyncHandler( async (req, res) => {
         throw new ApiError(400, "The title is not being passed, please ckeck")
     }
 
-    if(typeof title !== "string"){
-        throw new ApiError(400, "The type of title is not string, please ensure the correct data type")
-    }
-
     if(title.length > 150){
         throw new ApiError(400, "The length of the title exceeds 150 characters, which is not allowed")
     }
@@ -86,10 +82,6 @@ const createNote = asyncHandler( async (req, res) => {
 
     if(!textContent){
         throw new ApiError(400, "The text-content is not being passed, please ckeck")
-    }
-
-    if(typeof textContent !== "string"){
-        throw new ApiError(400, "The type of text-content is not string, please ensure the correct data type")
     }
 
     if(textContent.length > 50000){
@@ -109,8 +101,14 @@ const createNote = asyncHandler( async (req, res) => {
         throw new ApiError(400, "The color is not being passed, please check")
     }
 
-    if(typeof color !== "string"){
-        throw new ApiError(400, "The type of color is not string, please ensure the correct data type")
+    const allowedColors = [
+        "#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+        "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+        "#4B443A", "#232427"
+    ];
+
+    if (!allowedColors.includes(color)) {
+        throw new ApiError(400, "Invalid color value, please check your input.");
     }
 
     const colorToSave = String(color)
@@ -157,7 +155,7 @@ const createNote = asyncHandler( async (req, res) => {
     }
 
 
-    const note = Note.create({
+    const note = await Note.create({
         title : titleToSave,
         textContent : textContentToSave,
         color : colorToSave || "#232427",
@@ -188,6 +186,71 @@ const createNote = asyncHandler( async (req, res) => {
 } )
 
 
+
+const getUserNotes = asyncHandler( async (req, res) => {
+
+    const userId = req.user._id;
+
+    if(!userId){
+        throw new ApiError(400, "The user is not authenticated for retrieving notes")
+    }
+
+
+    const userNotes = await Note.aggregate([
+        {
+            $match : {
+                createdBy : userId
+            }
+        },
+        {
+            $lookup : {
+                from : "labels",
+                localField : "labelCatgory",
+                foreignField : "_id",
+                as : "labelDetails"
+            }
+        },
+        {
+            $unwind : {
+                path : "labelDetails",
+                preserveNullAndEmptyArrays : true
+            }
+        },
+        {
+            $project : {
+                title : 1,
+                textContent : 1,
+                color : 1,
+                imageUrl : 1,
+                createdAt : 1,
+                updatedAt : 1,
+                "labelDetails.labelName" : 1,
+                "labelDetails._id" : 1
+            }
+        }
+    ])
+
+
+    if(!userNotes || userNotes.length === 0 ){
+        throw new ApiError(404, "no notes found for the user")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            { notes : userNotes },
+            "User Notes retrieved successfully"
+        )
+    )
+
+} )
+
+
+
+
 export {
-    createNote
+    createNote,
+    getUserNotes
 }
