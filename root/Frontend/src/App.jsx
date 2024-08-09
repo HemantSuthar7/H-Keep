@@ -1,19 +1,22 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Outlet } from "react-router-dom"
+import Header from "./components/Header/Header.jsx"
+import Footer from "./components/Footer/Footer.jsx"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [loading, setLoading] = useState(true) // 🚫❌🚫❌ implement this later
 
-  return (
-    <>
-      <div className='my-auto mx-auto text-center'>
-        <h1 className=' text-black bg-green-700 rounded-xl'>H-KEEP</h1>
+  return !loading ? (
+    <div className="min-h-screen flex flex-col bg-zinc-900 scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-neutral-900 scrollbar-track-neutral-600 h-32 overflow-y-scroll">
+      <div className='w-full block text-white'>
+        <Header/>
+        <main className="flex-grow">
+        <Outlet />
+        </main>
+        <Footer/>
       </div>
-      
-    </>
-  )
+    </div>
+  ) : null
 }
 
 export default App
