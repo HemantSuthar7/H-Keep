@@ -3,6 +3,7 @@ import {asyncHandler} from "../utils/ascyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {uploadOnCloudinary} from "../utils/FileUpload.js"
+import {deleteFromCloudinary} from "../utils/FileDelete.js"
 import {Note} from "../Models/Note.models.js"
 import {Label} from "../Models/Label.models.js"
 
@@ -18,9 +19,9 @@ import {Label} from "../Models/Label.models.js"
 
         4. Delete Note
 
-        5. Add to Label ==>> this should be a utility
+        5. Add to Label ==>> this should be a utility (also add update label method)
 
-        6. Delete from Label ==>> this should be a utility
+        6. Remove from Label ==>> this should be a utility
 
         7. upload image (if image is provided by user)
 
@@ -248,9 +249,199 @@ const getUserNotes = asyncHandler( async (req, res) => {
 } )
 
 
+const updateNote = asyncHandler( async (req, res) => {
+
+    const {noteId, title, textContent, color, label} = req.body; // remember to receive image later
+
+    if(
+        [noteId, title, textContent, color, label].some( field => field?.trim() === "")
+    ){
+        throw new ApiError(400, "Empty values are being passed, please check for empty values")
+    }
+
+    if(
+        [noteId, title, textContent, color, label].some( field => typeof field !== "string")
+    ){
+        throw new ApiError(400, "One or more fields have a type other than string. Please check your input.")
+    }
+
+    if(!noteId){
+        throw new ApiError(400, "Note-id is not being passed, please ensure its transfer")
+    }
+
+    // first get existing note by provided noteId
+
+    const noteToUpdate = await Note.findById(noteId)
+
+    if(!noteToUpdate){
+        throw new ApiError(400, "Invalid note-id, please ensure correct note-id to be passed")
+    }
+
+
+
+    // Handle title
+    if(!title){
+        throw new ApiError(400, "The title is not being passed, please ckeck")
+    }
+
+    if(title.length > 150){
+        throw new ApiError(400, "The length of the title exceeds 150 characters, which is not allowed")
+    }
+
+    const titleToSave = String(title) || "Untitled" // just to ensure data type safet
+
+
+
+    // Handle textContent
+    if(!textContent){
+        throw new ApiError(400, "The text-content is not being passed, please ckeck")
+    }
+
+    if(textContent.length > 50000){
+        throw new ApiError(400, "The length of the text-content exceeds 50000 characters, which is not allowed")
+    }
+
+    const textContentToSave = String(textContent) // just to ensure data type safety
+
+
+
+    // Handle color
+    if(!color){
+        throw new ApiError(400, "The color is not being passed, please check")
+    }
+
+    const allowedColors = [
+        "#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+        "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+        "#4B443A", "#232427"
+    ];
+
+    if (!allowedColors.includes(color)) {
+        throw new ApiError(400, "Invalid color value, please check your input.");
+    }
+
+    const colorToSave = String(color)
+
+
+    // Handle label
+    
+    let labelCategory;
+
+    if (typeof label === "string") {
+        labelCategory = await Label.findById(label);
+        if (!labelCategory) {
+            throw new ApiError(400, "Invalid label ID");
+        }
+        labelCategory = labelCategory._id
+    }
+
+    if(typeof label === "object"){
+        labelCategory = null
+    }
+
+
+    // Handle image
+
+    const noteImageLocalPath = req.file?.path;
+    let updatedNoteImageUrlToSave;
+
+    if(noteImageLocalPath){
+
+        const noteImage = await uploadOnCloudinary(noteImageLocalPath)
+
+        if(!noteImage.url){
+            throw new ApiError(500, "Error occured while uploading note-image")
+        }
+
+        updatedNoteImageUrlToSave = noteImage.url
+
+        // delete the old image from cloudinary
+
+        // get the old image url
+
+        let oldImageUrl;
+
+        // if there exists a url
+        if(typeof noteToUpdate.imageUrl === "string"){
+            oldImageUrl = noteToUpdate.imageUrl
+
+            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+            const match = oldImageUrl.match(regex);
+            const public_id = match[1];
+
+            const deleteResponse = await deleteFromCloudinary(public_id, "image")
+
+            if (deleteResponse?.result === "ok") {
+                console.log("old image deleted successfully")
+            } else {
+                throw new ApiError(500, "There was an error while deleting the old avatar file")
+            }
+
+        }
+
+    }
+
+
+    if(!noteImageLocalPath){
+        updatedNoteImageUrlToSave = null
+
+        let oldImageUrl;
+
+        // if there exists a url
+        if(typeof noteToUpdate.imageUrl === "string"){
+            oldImageUrl = noteToUpdate.imageUrl
+
+            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+            const match = oldImageUrl.match(regex);
+            const public_id = match[1];
+
+            const deleteResponse = await deleteFromCloudinary(public_id, "image")
+
+            if (deleteResponse?.result === "ok") {
+                console.log("old image deleted successfully")
+            } else {
+                throw new ApiError(500, "There was an error while deleting the old avatar file")
+            }
+
+        }
+    }
+
+
+    const updatedNote = await Note.findByIdAndUpdate(
+        noteToUpdate._id,
+        {
+            $set : {
+                title : titleToSave,
+                textContent : textContentToSave,
+                color : colorToSave,
+                labelCategory : labelCategory,
+                imageUrl : updatedNoteImageUrlToSave, 
+            }
+        },
+        {new: true}
+    )
+
+    if(!updatedNote){
+        throw new ApiError(500, "There was an error while saving the updated details to existing note")
+    }
+
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {updatedNoteDetails : updatedNote},
+            "Note updated successfully"
+        )
+    )
+
+} )
+
 
 
 export {
     createNote,
-    getUserNotes
+    getUserNotes,
+    updateNote
 }
