@@ -2,6 +2,7 @@ import {User} from "../Models/User.models.js"
 import {asyncHandler} from "../utils/ascyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
+import {uploadOnCloudinary} from "../utils/FileUpload.js"
 
 
 /*
@@ -98,10 +99,42 @@ const createNote = asyncHandler( async (req, res) => {
 
     // Handle color
 
-    
+    // ❌❌❌🚫🚫🚫🛑 WARNING !!!! : Make sure that color is one of these only : ,"#256377","#0C625D","#264D3B","#77172E","#284255","#472E5B","#6C394F","#692B17","#7C4A03","#4B443A","#232427"] , make sure no other color is passed from frontend.
+
+    // ALSO MAKE SURE IF USER DOES NOT SELECT ANY COLOR THEN THE DEFAULT "#232427" SHOULD BE PASSED...
+
+    if(!color){
+        throw new ApiError(400, "The color is not being passed, please check")
+    }
+
+    if(typeof color !== "string"){
+        throw new ApiError(400, "The type of color is not string, please ensure the correct data type")
+    }
+
+    const colorToSave = String(color) || "#232427"
 
 
 
+    // Handle label ==========================>>>>>>>>>>>>>>>> PLEASE COMPLETE THIS
+
+
+    // Handle createdBy =====================>>>>>>>>>>>>>>>   PLEASE COMPLETE THIS
+
+
+    // Handle image
+
+    const noteImageLocalPath = req.file?.path;
+
+    if(noteImageLocalPath){
+
+        const noteImage = await uploadOnCloudinary(noteImageLocalPath)
+
+        if(!noteImage.url){
+            throw new ApiError(500, "Error occured while uploading note-image")
+        }
+
+        var noteImageUrlToSave = noteImage.url
+    }
 
 
 } )
