@@ -1,4 +1,3 @@
-import {User} from "../Models/User.models.js"
 import {asyncHandler} from "../utils/ascyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
@@ -18,17 +17,6 @@ import {Label} from "../Models/Label.models.js"
         3. Update Note
 
         4. Delete Note
-
-        5. Add to Label ==>> this should be a utility (also add update label method)
-
-        6. Remove from Label ==>> this should be a utility
-
-        7. upload image (if image is provided by user)
-
-        8. update image (after updating delete the previous one)
-        
-        9. Delete image (if image already exists)
-
 
 
     << NOTE COMPONENTS : 
@@ -188,6 +176,7 @@ const createNote = asyncHandler( async (req, res) => {
 
 
 
+
 const getUserNotes = asyncHandler( async (req, res) => {
 
     const userId = req.user._id;
@@ -247,6 +236,8 @@ const getUserNotes = asyncHandler( async (req, res) => {
     )
 
 } )
+
+
 
 
 const updateNote = asyncHandler( async (req, res) => {
@@ -440,8 +431,69 @@ const updateNote = asyncHandler( async (req, res) => {
 
 
 
+const deleteNote = asyncHandler( async (req, res) => {
+
+    const { noteId } = req.params;
+
+    if(!noteId){
+        throw new ApiError(400, "Note ID is required for deletion")
+    }
+
+    const existingNoteDetails = await Note.findById(noteId);
+
+    if(!existingNoteDetails){
+        throw new ApiError(404, "Note not found, Note-Id is invalid")
+    }
+
+     // get the old image url
+
+     let oldImageUrl;
+
+     // if there exists a url
+     if(typeof existingNoteDetails.imageUrl === "string"){
+         oldImageUrl = existingNoteDetails.imageUrl
+
+         const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+         const match = oldImageUrl.match(regex);
+         const public_id = match[1];
+
+         const deleteResponse = await deleteFromCloudinary(public_id, "image")
+
+         if (deleteResponse?.result === "ok") {
+             console.log("old image deleted successfully")
+         } else {
+             throw new ApiError(500, "There was an error while deleting the old avatar file")
+         }
+
+     }
+
+
+     const noteToDelete = await Note.findByIdAndDelete(noteId);
+
+     if(!noteToDelete){
+        throw new ApiError(500, "There was an error while deleting the note")
+     }
+
+
+     return res
+     .status(200)
+     .json(
+        new ApiResponse(
+            200,
+            {},
+            "Note deleted successfully"
+        )
+     )
+
+
+} )
+
+
+
+
 export {
     createNote,
     getUserNotes,
-    updateNote
+    updateNote,
+    deleteNote
 }
