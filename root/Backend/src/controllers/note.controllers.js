@@ -3,6 +3,8 @@ import {asyncHandler} from "../utils/ascyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {uploadOnCloudinary} from "../utils/FileUpload.js"
+import {Note} from "../Models/Note.models.js"
+import {Label} from "../Models/Label.models.js"
 
 
 /*
@@ -111,19 +113,37 @@ const createNote = asyncHandler( async (req, res) => {
         throw new ApiError(400, "The type of color is not string, please ensure the correct data type")
     }
 
-    const colorToSave = String(color) || "#232427"
+    const colorToSave = String(color)
 
 
 
-    // Handle label ==========================>>>>>>>>>>>>>>>> PLEASE COMPLETE THIS
+    // Handle label
+
+    // ❌❌🚫🚫❗❗❌❌ WARNING : If user has selected a label, then pass the labelId as the label value from frontend.
 
 
-    // Handle createdBy =====================>>>>>>>>>>>>>>>   PLEASE COMPLETE THIS
+    let labelCategory;
+    if (label) {
+        labelCategory = await Label.findById(label);
+        if (!labelCategory) {
+            throw new ApiError(400, "Invalid label ID");
+        }
+    }
+
+
+    // Handle createdBy 
+
+    const userId = req.user._id;
+
+    if(!userId){
+        throw new ApiError(400, "User is not authenticated")
+    }
 
 
     // Handle image
 
     const noteImageLocalPath = req.file?.path;
+    let noteImageUrlToSave = null
 
     if(noteImageLocalPath){
 
@@ -133,8 +153,36 @@ const createNote = asyncHandler( async (req, res) => {
             throw new ApiError(500, "Error occured while uploading note-image")
         }
 
-        var noteImageUrlToSave = noteImage.url
+        noteImageUrlToSave = noteImage.url
     }
+
+
+    const note = Note.create({
+        title : titleToSave,
+        textContent : textContentToSave,
+        color : colorToSave || "#232427",
+        createdBy : userId,
+        labelCategory : labelCategory ? labelCategory._id : null,
+        imageUrl : noteImageUrlToSave
+    })
+
+    if(!note){
+        throw new ApiError(500, "There was an error while creating note")
+    }
+
+
+
+    // if everything goes well, return response
+
+    return res
+    .status(201)
+    .json(
+        new ApiResponse(
+            201,
+            {noteData : note},
+            "Note created successfully"
+        )
+    )
 
 
 } )
