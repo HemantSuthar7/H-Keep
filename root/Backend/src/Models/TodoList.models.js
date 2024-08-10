@@ -1,5 +1,18 @@
 import mongoose , {Schema} from "mongoose";
 
+const todoItemsSchema = new Schema({
+    value : {
+        type : String,
+        required : [true, "todo-items cannot be empty"],
+        maxLength : 150
+    },
+    status : {
+        type : Boolean,
+        required : [true, "status is required"],
+        default : false
+    }
+})
+
 const todoListSchema = new Schema({
     title: {
         type: String,
@@ -7,13 +20,13 @@ const todoListSchema = new Schema({
         maxlength: 100, 
     },
     todoItems:{
-        type: [String],
+        type: [todoItemsSchema],
         required: [true, "Content is required in list"],
         validate: {
             validator: function(v){
-                return v.every(item => item.length <= 150);
+                return v.length > 0;
             },
-            message: props => "Each todo item should not exceed 150 characters in length"
+            message: props => "The todoItems should atleast contain one item"
         }
     },
     createdBy: {

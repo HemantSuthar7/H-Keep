@@ -275,8 +275,8 @@ const updateNote = asyncHandler( async (req, res) => {
         throw new ApiError(400, "The title is not being passed, please ckeck")
     }
 
-    if(title.length > 150){
-        throw new ApiError(400, "The length of the title exceeds 150 characters, which is not allowed")
+    if(title.length > 100){
+        throw new ApiError(400, "The length of the title exceeds 100 characters, which is not allowed")
     }
 
     const titleToSave = String(title) || "Untitled" // just to ensure data type safet

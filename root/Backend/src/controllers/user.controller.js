@@ -11,7 +11,7 @@ import JWT from "jsonwebtoken"
     2. Login
     3. Logout // testing -- make sure the refresh token is getting deleted from db
     4. Change current password - if the user knows the old password
-    5. Forgot password
+    5. Forgot password ==> JUST A PPROVISION
     6. refresh access token 
     7. get current user
     8. update account details
