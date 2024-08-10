@@ -12,7 +12,7 @@ import {Label} from "../Models/Label.models.js"
     Some methods to write in here : 
         1. Create Note
 
-        2. Get User Notes
+        2. Get User Notes (the whole read operation of getting user lists and notes will be provided in user controller)
 
         3. Update Note
 

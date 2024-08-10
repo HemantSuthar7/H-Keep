@@ -23,21 +23,10 @@ import {TodoList} from "../Models/TodoList.models.js"
 
         2. Get User lists
 
-        3. Update list 
+        3. Update list (the whole read operation of getting user lists and notes will be provided in user controller)
 
-        4. Upload image (if image is provided by user)
+        4. Delete list 
 
-        5. update image (after updating delete the previous one)
-
-        6. Delete image
-
-        7. Delete list (delete the whole list document from db. don't forget to delete it from local storage)
-
-        8. add list item
-
-        9. update list item (we will manage the list item toggle in frontend and store boolean in local storage)
-
-        10. delete list item
 
 */
 
@@ -194,6 +183,7 @@ const createList = asyncHandler( async (req, res) => {
 
 
 } )
+
 
 
 
@@ -441,7 +431,65 @@ const updateList = asyncHandler( async (req, res) => {
 } )
 
 
+
+const deleteList = asyncHandler( async (req, res) => {
+
+    const { todoListId } = req.params;
+
+    if(!todoListId){
+        throw new ApiError(400, "todoList-id is required for deletion")
+    }
+
+    const existingTodoListDetails = await TodoList.findById(todoListId)
+
+    if(!existingTodoListDetails){
+        throw new ApiError(404, "todoList not found, todoList-id invalid")
+    }
+
+
+    // get the old image url
+
+    let oldImageUrl;
+
+    // if there exists a url
+    if(typeof existingTodoListDetails.imageUrl === "string"){
+        oldImageUrl = existingTodoListDetails.imageUrl
+
+        const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+        const match = oldImageUrl.match(regex);
+        const public_id = match[1];
+
+        const deleteResponse = await deleteFromCloudinary(public_id, "image")
+
+        if (deleteResponse?.result === "ok") {
+            console.log("old image deleted successfully")
+        } else {
+            throw new ApiError(500, "There was an error while deleting the old avatar file")
+        }
+
+    }
+
+
+    const todoListToDelete = await TodoList.findByIdAndDelete(existingTodoListDetails._id)
+
+    if(!todoListToDelete){
+        throw new ApiError(500, "There was an error while deleting the todoList")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "TodoList deleted successfully"
+        )
+    )
+
+} )
+
 export {
     createList,
-    updateList
+    updateList,
+    deleteList
 }
