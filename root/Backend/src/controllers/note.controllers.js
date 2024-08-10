@@ -365,7 +365,7 @@ const updateNote = asyncHandler( async (req, res) => {
             if (deleteResponse?.result === "ok") {
                 console.log("old image deleted successfully")
             } else {
-                throw new ApiError(500, "There was an error while deleting the old avatar file")
+                throw new ApiError(500, "There was an error while deleting the old note image")
             }
 
         }
@@ -391,7 +391,7 @@ const updateNote = asyncHandler( async (req, res) => {
             if (deleteResponse?.result === "ok") {
                 console.log("old image deleted successfully")
             } else {
-                throw new ApiError(500, "There was an error while deleting the old avatar file")
+                throw new ApiError(500, "There was an error while deleting the old note image")
             }
 
         }

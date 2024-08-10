@@ -1,4 +1,3 @@
-import {User} from "../Models/User.models.js"
 import {asyncHandler} from "../utils/ascyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
@@ -195,3 +194,254 @@ const createList = asyncHandler( async (req, res) => {
 
 
 } )
+
+
+
+const updateList = asyncHandler( async (req, res) => {
+    
+    const {todoListId, title, todoItems, label, color} = req.body;
+
+    if(
+        [todoListId, title, label, color].some( field => field?.trim() === "" )
+    ){
+        throw new ApiError(400, "Empty values are being passed, please check for empty values")
+    }
+
+    if(
+        [todoListId, title, label, color].some( field => typeof field !== "string" )
+    ){
+        throw new ApiError(400, "One or more fields have a type other than string. Please check your input.")
+    }
+
+
+    if(!todoListId){
+        throw new ApiError(400, "todoList-id is not being passed, please ensure its transfer")
+    }
+
+    const todoListToUpdate = await TodoList.findById(todoListId);
+
+    if(!todoListToUpdate){
+        throw new ApiError(400, "Invalid todoList-id, please ensure correct todoList-id to be passed")
+    }
+
+
+
+
+    // Handle title
+
+    
+    if(!title){
+        throw new ApiError(400, "The title is not being passed, please ckeck")
+    }
+
+    if(title.length > 100){
+        throw new ApiError(400, "The length of the title exceeds 100 characters, which is not allowed")
+    }
+
+    const titleToSave = String(title) || "Untitled" // just to ensure data type safety
+
+
+
+    // Handle todoItems 
+
+    if(!todoItems){
+        throw new ApiError(400, "the todo-items is not being passed, please ensure correct transfer")
+    }
+
+    if(!Array.isArray(todoItems)){
+        throw new ApiError(400, "The todo items is not an array, please ensure the correct data type")
+    }
+ 
+    if(todoItems.length === 0){
+        throw new ApiError(400, "The todo-items cannot be empty")
+    }
+
+
+    // check if every element is an object and every object should have two keys "value" & "status" and further these keys should not be empty, null or undefined
+    for(let i = 0; i < todoItems.length; i++){
+        const item = todoItems[i];
+
+        if(typeof item !== "object" || item === null){
+            throw  new ApiError(400, `Item at index ${i} is not an object`)
+        }
+
+        if(!item.hasOwnProperty("value")){
+            throw new ApiError(400, `Item at index ${i} is missing the 'value' key`);
+        }
+
+        if(typeof item.value !== String){
+            throw new ApiError(400, `value of current todoItem object at index ${i} is not string`)
+        }
+
+        if(item.value === "" || item.value === null || item.value === undefined){
+            throw new ApiError(400, `The 'value' key in item at index ${i} cannot be empty, null, or undefined`);
+        }
+
+        if(!item.hasOwnProperty("status")){
+            throw new ApiError(400, `Item at index ${i} is missing the 'status' key`);
+        }
+
+        if(typeof item.status !== Boolean){
+            throw new ApiError(400, `status of current object at index ${i} is not a boolean`)
+        }
+
+        if (item.status === null || item.status === undefined) {
+            throw new ApiError(400, `The 'status' key in item at index ${i} cannot be null or undefined`);
+        }
+
+    }
+
+    const todoItemsToSave = todoItems
+
+
+    // Handle color
+
+    if(!color){
+        throw new ApiError(400, "The color is not being passed, please check")
+    }
+
+    const allowedColors = [
+        "#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+        "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+        "#4B443A", "#232427"
+    ];
+
+    if (!allowedColors.includes(color)) {
+        throw new ApiError(400, "Invalid color value, please check your input.");
+    }
+
+    const colorToSave = String(color)
+
+
+
+    // Handle label
+
+    let labelCategory;
+
+    if (typeof label === "string") {
+        labelCategory = await Label.findById(label);
+        if (!labelCategory) {
+            throw new ApiError(400, "Invalid label ID");
+        }
+        labelCategory = labelCategory._id
+    }
+
+    if(typeof label === "object"){
+        labelCategory = null
+    }
+
+
+
+
+    // Handle image
+
+    const todoListImageLocalPath = req.file?.path;
+    let updatedTodoListImageUrlToSave;
+
+    if(todoListImageLocalPath){
+
+        const todoListImage = await uploadOnCloudinary(todoListImageLocalPath)
+
+        if(!todoListImage.url){
+            throw new ApiError(500, "Error occured while uploading todoList-image")
+        }
+
+        updatedTodoListImageUrlToSave = todoListImage.url
+
+        // delete the old image from cloudinary
+
+        // get the old image url
+
+        let oldImageUrl;
+
+        // if there exists a url
+        if(typeof todoListToUpdate.imageUrl === "string"){
+            oldImageUrl = todoListToUpdate.imageUrl
+
+            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+            const match = oldImageUrl.match(regex);
+            const public_id = match[1];
+
+            const deleteResponse = await deleteFromCloudinary(public_id, "image")
+
+            if (deleteResponse?.result === "ok") {
+                console.log("old image deleted successfully")
+            } else {
+                throw new ApiError(500, "There was an error while deleting the old todoList image")
+            }
+
+        }
+
+    }
+
+
+    if(!todoListImageLocalPath){
+        updatedTodoListImageUrlToSave = null
+
+        let oldImageUrl;
+
+        // if there exists a url
+        if(typeof todoListToUpdate.imageUrl === "string"){
+            oldImageUrl = todoListToUpdate.imageUrl
+
+            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+            const match = oldImageUrl.match(regex);
+            const public_id = match[1];
+
+            const deleteResponse = await deleteFromCloudinary(public_id, "image")
+
+            if (deleteResponse?.result === "ok") {
+                console.log("old image deleted successfully")
+            } else {
+                throw new ApiError(500, "There was an error while deleting the old todoList image")
+            }
+
+        }
+    }
+
+
+
+
+
+
+    // if everything is good, then update the todoList via the provided todoListId
+
+    const updatedTodoList = await TodoList.findByIdAndUpdate(
+        todoListToUpdate._id,
+        {
+            $set : {
+                title : titleToSave,
+                todoItems : todoItemsToSave,
+                color : colorToSave,
+                labelCategory : labelCategory,
+                imageUrl : updatedTodoListImageUrlToSave
+
+            }
+        },
+        {
+            new : true
+        }
+    )
+
+    if(!updatedTodoList){
+        throw new ApiError(500, "There was an error while updating the existing todoList")
+    }
+
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {updatedTodoList},
+            "Todo-List updated successfully"
+        )
+    )
+
+} )
+
+
+export {
+    createList,
+    updateList
+}
