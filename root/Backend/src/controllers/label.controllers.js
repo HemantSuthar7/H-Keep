@@ -150,11 +150,72 @@ const getLabelData = asyncHandler( async (req, res) => {
 
 
 const updateLabel = asyncHandler( async (req, res) => {
+
+    const {labelId, labelName} = req.body;
+
+    if (!labelId || typeof labelId !== "string" || labelId.trim() === "") {
+        throw new ApiError(400, "Invalid labelId passed");
+    }
+
+    const existingLabel = await Label.findById(labelId);
+
+    if(!existingLabel){
+        throw new ApiError(404, "Label not found, label-id invalid")
+    }
+
+    // Handle labelName
+
+    if(!labelName){
+        throw new ApiError(400, "Label-name is not being passed, please ensure its transfer")
+    }
+
+    if(typeof labelName !== "string"){
+        throw new ApiError(400, "The label-name data type is not string")
+    }
+
+    if(labelName.trim() === ""){
+        throw new ApiError(400, "You cannot provide empty label name")
+    }
+
+    if(labelName.length > 25){
+        throw new ApiError(400, "The label-name length should not exceed 25 characters")
+    }
+
+    const labelNameToSave = String(labelName);
+
     
+    const updatedLabel = await Label.findByIdAndUpdate(
+        labelId,
+        {
+            $set : {
+                labelName : labelNameToSave
+            }
+        },
+        {
+            new : true
+        }
+    )
+
+    if(!updatedLabel){
+        throw new ApiError(500, "There was an error while updating the label name")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {updatedLabel},
+            "Label updated successfully"
+        )
+    )
+
+
 } )
 
 
 export {
     createLabel,
-    getLabelData
+    getLabelData,
+    updateLabel,
 }
