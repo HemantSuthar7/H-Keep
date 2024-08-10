@@ -4,7 +4,7 @@ const todoItemsSchema = new Schema({
     value : {
         type : String,
         required : [true, "todo-items cannot be empty"],
-        maxLength : 150
+        maxlength : 150
     },
     status : {
         type : Boolean,

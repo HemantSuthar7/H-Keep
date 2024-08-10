@@ -4,12 +4,12 @@ const NoteSchema = new Schema({
     title: {
         type: String,
         required: [true,"Title is required"], // pass in a default values from controller if no title passed by user
-        maxLength : 100
+        maxlength : 100
     },
     textContent: {
         type: String,
         required: [true,"text-content is required"],
-        maxLength : 50000
+        maxlength : 50000
     },
     color: {
         type: String,

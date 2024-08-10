@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const LabelSchema = new Schema({
     labelName: {
         type: String,
-        maxlength: 100,
+        maxlength: 25,
         required: [true, "Label name is required"]
     },
     createdBy:{
