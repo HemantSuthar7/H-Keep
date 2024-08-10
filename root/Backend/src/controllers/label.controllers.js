@@ -149,6 +149,7 @@ const getLabelData = asyncHandler( async (req, res) => {
 } )
 
 
+
 const updateLabel = asyncHandler( async (req, res) => {
 
     const {labelId, labelName} = req.body;
@@ -214,8 +215,87 @@ const updateLabel = asyncHandler( async (req, res) => {
 } )
 
 
+
+const deleteLabel = asyncHandler( async (req, res) => {
+
+    // Logic for deleting label : 
+    //      1. Get the label id and userId and validate them 
+    //      2. somehow set the labelcategory as null where the provided labelId is stored i.e. in notes and todoLists
+    //      3. if everything goes well then return the response
+
+    const { labelId } = req.params;
+    const userId = req.user._id;
+
+    if(!userId){
+        throw new ApiError(400, "The user is not authenticated for retrieving labelData")
+    }
+
+    if (!labelId || typeof labelId !== "string" || labelId.trim() === "") {
+        throw new ApiError(400, "Invalid labelId passed");
+    }
+
+    const existingLabel = await Label.findById(labelId);
+
+    if (!existingLabel) {
+        throw new ApiError(404, "Label not found, label-id invalid");
+    }
+
+    const updateNotesResult  = await Note.updateMany(
+        {
+            labelCategory: labelId, 
+            createdBy : userId
+        },
+        {
+            $set : {
+                labelCategory : null
+            }
+        }
+    )
+
+    const updateTodoListsResult = await TodoList.updateMany(
+        {
+            labelCategory: labelId, 
+            createdBy : userId
+        },
+        {
+            $set : {
+                labelCategory : null
+            }
+        }
+    )
+
+
+    if (
+        (updateNotesResult.modifiedCount === 0 && updateNotesResult.matchedCount > 0) ||
+        (updateTodoListsResult.modifiedCount === 0 && updateTodoListsResult.matchedCount > 0)
+    ) {
+        throw new ApiError(500, "Failed to update notes or todoLists with null labelCategory");
+    }
+
+
+    const deletedLabel = await Label.findByIdAndDelete(existingLabel._id)
+
+    if(!deletedLabel){
+        throw new ApiError(500, "There was an error while deleting the label")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Label deleted successfully"
+        )
+    )
+
+
+} )
+
+
 export {
     createLabel,
     getLabelData,
     updateLabel,
+    deleteLabel
 }
