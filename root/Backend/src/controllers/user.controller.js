@@ -463,4 +463,5 @@ export {
     changeCurrentPassword, // TESTING ==> SUCCESSFULL 
     getCurrentUser, // TESTING ==> SUCCESSFULL
     updateAccountDetails, // TESTING ==> SUCCESSFULL
+    // INCLUDE one more method in the user controller for getting all of the user's notes and lists. 
 }
