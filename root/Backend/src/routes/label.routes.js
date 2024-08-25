@@ -19,7 +19,7 @@ const labelRouter = Router();
 labelRouter.route("/create-Label").post(verifyJWT, createLabel);
 labelRouter.route("/get-Label-Data/:labelId").get(verifyJWT, getLabelData);
 labelRouter.route("/update-Label").patch(verifyJWT, updateLabel);
-labelRouter.route("/delete-Label").get(verifyJWT, deleteLabel);
+labelRouter.route("/delete-Label/:labelId").get(verifyJWT, deleteLabel);
 
 
 

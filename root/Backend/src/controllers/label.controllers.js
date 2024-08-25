@@ -162,7 +162,7 @@ const updateLabel = asyncHandler( async (req, res) => {
 
     const {labelId, labelName} = req.body;
 
-    if (!labelId || typeof labelId !== "string" || labelId.trim() === "") {
+    if (!labelId || typeof labelId !== "string" || labelId.trim() === "" || !mongoose.Types.ObjectId.isValid(labelId)) {
         throw new ApiError(400, "Invalid labelId passed");
     }
 
@@ -304,6 +304,6 @@ const deleteLabel = asyncHandler( async (req, res) => {
 export {
     createLabel, // TESTING => SUCCESSFULL
     getLabelData, // TESTING => SUCCESSFULL
-    updateLabel,
-    deleteLabel
+    updateLabel, // TESTING => SUCCESSFULL
+    deleteLabel // TESTING => SUCCESSFULL
 }
