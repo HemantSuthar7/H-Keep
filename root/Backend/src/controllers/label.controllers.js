@@ -36,7 +36,7 @@ const createLabel = asyncHandler( async (req, res) => {
         throw new ApiError(400, "The label-name data type is not string")
     }
 
-    if(labelName === ""){
+    if(labelName.trim() === ""){
         throw new ApiError(400, "You cannot provide empty label name")
     }
 
@@ -113,21 +113,29 @@ const getLabelData = asyncHandler( async (req, res) => {
         Note.aggregate([
             {
                 $match : {
-                    labelCategory : mongoose.Types.ObjectId(labelId),
-                    createdBy : mongoose.Types.ObjectId(userId)
+                    labelCategory : new mongoose.Types.ObjectId(labelId),
+                    createdBy : new mongoose.Types.ObjectId(userId)
+                    // labelCategory : labelId,
+                    // createdBy : userId
                 }
             }
         ]),
         TodoList.aggregate([
             {
                 $match : {
-                    labelCategory : mongoose.Types.ObjectId(labelId),
-                    createdBy : mongoose.Types.ObjectId(userId)
+                    labelCategory : new mongoose.Types.ObjectId(labelId),
+                    createdBy : new mongoose.Types.ObjectId(userId)
+                    // labelCategory : labelId,
+                    // createdBy : userId
                 }
             }
         ])
     ])
 
+
+    if(!labelData){
+        throw new ApiError(500, "There was an issue while retrieving the label related data")
+    }
 
     const [notes, todoLists] = labelData;
 
@@ -294,8 +302,8 @@ const deleteLabel = asyncHandler( async (req, res) => {
 
 
 export {
-    createLabel,
-    getLabelData,
+    createLabel, // TESTING => SUCCESSFULL
+    getLabelData, // TESTING => SUCCESSFULL
     updateLabel,
     deleteLabel
 }

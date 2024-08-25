@@ -209,7 +209,6 @@ const createList = asyncHandler( async (req, res) => {
 
 
 
-
 const updateList = asyncHandler( async (req, res) => {
     
     const {todoListId, title, todoItems, label, color} = req.body;
@@ -520,5 +519,5 @@ const deleteList = asyncHandler( async (req, res) => {
 export {
     createList, // TESTING => SUCCESSFULL
     updateList, // TESTING => SUCCESSFULL
-    deleteList 
+    deleteList // TESTING => SUCCESSFULL
 }
