@@ -19,8 +19,8 @@ const noteRouter = Router();
 
 noteRouter.route("/create-Note").post(verifyJWT, upload.single("image"), createNote);
 noteRouter.route("/get-User-Notes").get(verifyJWT, getUserNotes);
-noteRouter.route("/update-Note").patch(verifyJWT, updateNote);
-noteRouter.route("/delete-Note/:noteId").post(verifyJWT, deleteNote); // we have to supply noteId through params
+noteRouter.route("/update-Note").patch(verifyJWT, upload.single("image"), updateNote);
+noteRouter.route("/delete-Note/:noteId").get(verifyJWT, deleteNote); // we have to supply noteId through params
 
 
 
