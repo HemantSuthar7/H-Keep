@@ -3,7 +3,8 @@ import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {Label} from "../Models/Label.models.js"
 import {TodoList} from "../Models/TodoList.models.js"
-
+import {uploadOnCloudinary} from "../utils/FileUpload.js"
+import {deleteFromCloudinary} from "../utils/FileDelete.js"
 
 /*
 
@@ -37,38 +38,51 @@ const createList = asyncHandler( async (req, res) => {
 
     const {title, todoItems, label, color} = req.body;
 
-    if(
-        [title, label, color].some( field => field?.trim() === "" )
-    ){
-        throw new ApiError(400, "Empty values are being passed, please check for empty values")
-    }
 
     if(
-        [title, label, color].some( field => typeof field !== "string" )
+        [title, label, color].some( field => field !== undefined && typeof field !== "string" )
     ){
         throw new ApiError(400, "One or more fields have a type other than string. Please check your input.")
+    }
+
+
+    if(
+        [title, label, color].some( field => field !== undefined && field.trim() === "" )
+    ){
+        throw new ApiError(400, "Empty values are being passed, please check for empty values")
     }
 
 
 
     // Handle todoItems
 
+
     if(!todoItems){
         throw new ApiError(400, "the todo-items is not being passed, please ensure correct transfer")
     }
 
-    if(!Array.isArray(todoItems)){
+
+    const parsedTodoItems = todoItems.map(item => {
+        try {
+            return JSON.parse(item);
+        } catch (error) {
+            throw new ApiError(400, "Invalid todoItem format. Could not parse JSON.");
+        }
+    });
+
+
+    if(!Array.isArray(parsedTodoItems)){
         throw new ApiError(400, "The todo items is not an array, please ensure the correct data type")
     }
  
-    if(todoItems.length === 0){
+    if(parsedTodoItems.length === 0){
         throw new ApiError(400, "The todo-items cannot be empty")
     }
 
 
     // check if every element is an object and every object should have two keys "value" & "status" and further these keys should not be empty, null or undefined
-    for(let i = 0; i < todoItems.length; i++){
-        const item = todoItems[i];
+    for(let i = 0; i < parsedTodoItems.length; i++){
+        const item = parsedTodoItems[i];
 
         if(typeof item !== "object" || item === null){
             throw  new ApiError(400, `Item at index ${i} is not an object`)
@@ -78,7 +92,7 @@ const createList = asyncHandler( async (req, res) => {
             throw new ApiError(400, `Item at index ${i} is missing the 'value' key`);
         }
 
-        if(typeof item.value !== String){
+        if(typeof item.value !== 'string'){
             throw new ApiError(400, `value of current todoItem object at index ${i} is not string`)
         }
 
@@ -90,7 +104,7 @@ const createList = asyncHandler( async (req, res) => {
             throw new ApiError(400, `Item at index ${i} is missing the 'status' key`);
         }
 
-        if(typeof item.status !== Boolean){
+        if(typeof item.status !== 'boolean'){
             throw new ApiError(400, `status of current object at index ${i} is not a boolean`)
         }
 
@@ -100,7 +114,7 @@ const createList = asyncHandler( async (req, res) => {
 
     }
 
-    const todoItemsToSave = todoItems
+    const todoItemsToSave = parsedTodoItems
 
 
 
@@ -115,7 +129,6 @@ const createList = asyncHandler( async (req, res) => {
     }
 
     const titleToSave = String(title) || "Untitled" // just to ensure data type safety
-
 
 
     // Handle color
@@ -172,7 +185,7 @@ const createList = asyncHandler( async (req, res) => {
     }
 
 
-    const todoList = TodoList.create({
+    const todoList = await TodoList.create({
         title : titleToSave,
         todoItems : todoItemsToSave,
         createdBy : userId,
@@ -181,6 +194,16 @@ const createList = asyncHandler( async (req, res) => {
         imageUrl : listImageUrlToSave
     })
 
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {data : todoList},
+            "List created successfully"
+        )
+    )
 
 } )
 
@@ -191,17 +214,20 @@ const updateList = asyncHandler( async (req, res) => {
     
     const {todoListId, title, todoItems, label, color} = req.body;
 
+
+    
     if(
-        [todoListId, title, label, color].some( field => field?.trim() === "" )
+        [todoListId, title, label, color].some( field => field !== undefined && typeof field !== "string" )
+    ){
+        throw new ApiError(400, "One or more fields have a type other than string. Please check your input.")
+    }
+
+    if(
+        [todoListId, title, label, color].some( field !== undefined && field.trim() === "" )
     ){
         throw new ApiError(400, "Empty values are being passed, please check for empty values")
     }
 
-    if(
-        [todoListId, title, label, color].some( field => typeof field !== "string" )
-    ){
-        throw new ApiError(400, "One or more fields have a type other than string. Please check your input.")
-    }
 
 
     if(!todoListId){
@@ -488,8 +514,10 @@ const deleteList = asyncHandler( async (req, res) => {
 
 } )
 
+
+
 export {
-    createList,
+    createList, // TESTING => SUCCESSFULL
     updateList,
     deleteList
 }

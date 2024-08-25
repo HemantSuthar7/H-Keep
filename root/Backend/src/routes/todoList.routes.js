@@ -8,14 +8,16 @@ import  {
 
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
+import {upload} from "../middlewares/multer.middleware.js"
+
 
 const todoListRouter = Router();
 
 
 // Routes declaration
 
-todoListRouter.route("/create-TodoList").post(verifyJWT, createList);
-todoListRouter.route("/update-TodoList").patch(verifyJWT, updateList);
+todoListRouter.route("/create-TodoList").post(verifyJWT, upload.single("image"), createList);
+todoListRouter.route("/update-TodoList").patch(verifyJWT, upload.single("image"), updateList);
 todoListRouter.route("/delete-TodoList/:todoListId").get(verifyJWT, deleteList);
 
 
