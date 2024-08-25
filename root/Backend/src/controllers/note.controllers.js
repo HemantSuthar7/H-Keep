@@ -47,7 +47,7 @@ const createNote = asyncHandler( async (req, res) => {
         throw new ApiError(400, "One or more fields have a type other than string. Please check your input.");
     }
 
-    
+
     if (
         [title, textContent, color, label].some(field => field !== undefined && field.trim() === "")
     ) {
@@ -204,7 +204,7 @@ const getUserNotes = asyncHandler( async (req, res) => {
         },
         {
             $unwind : {
-                path : "labelDetails",
+                path : "$labelDetails",
                 preserveNullAndEmptyArrays : true
             }
         },
@@ -494,7 +494,7 @@ const deleteNote = asyncHandler( async (req, res) => {
 
 
 export {
-    createNote,
+    createNote, // TESTING => SUCCESSFULL
     getUserNotes,
     updateNote,
     deleteNote
