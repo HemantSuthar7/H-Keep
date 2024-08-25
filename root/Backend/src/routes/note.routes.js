@@ -9,16 +9,18 @@ import {
 
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
+import {upload} from "../middlewares/multer.middleware.js"
+
 
 const noteRouter = Router();
 
 
 // Routes declaration 
 
-noteRouter.route("/create-Note").post(verifyJWT, createNote);
-noteRouter.route("/get-User-Notes").post(verifyJWT, getUserNotes);
-noteRouter.route("/update-Note").post(verifyJWT, updateNote);
-noteRouter.route("/delete-Note").post(verifyJWT, deleteNote);
+noteRouter.route("/create-Note").post(verifyJWT, upload.single("image"), createNote);
+noteRouter.route("/get-User-Notes").get(verifyJWT, getUserNotes);
+noteRouter.route("/update-Note").patch(verifyJWT, updateNote);
+noteRouter.route("/delete-Note/:noteId").post(verifyJWT, deleteNote); // we have to supply noteId through params
 
 
 

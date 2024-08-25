@@ -40,18 +40,20 @@ const createNote = asyncHandler( async (req, res) => {
     // 7. if label is supplied then reference it in db
 
     const {title, textContent, color, label} = req.body; // remember to receive image later
-
-    if(
-        [title, textContent, color, label].some( field => field?.trim() === "")
-    ){
-        throw new ApiError(400, "Empty values are being passed, please check for empty values")
+    
+    if (
+        [title, textContent, color, label].some(field => field !== undefined && typeof field !== "string")
+    ) {
+        throw new ApiError(400, "One or more fields have a type other than string. Please check your input.");
     }
 
-    if(
-        [title, textContent, color, label].some( field => typeof field !== "string")
-    ){
-        throw new ApiError(400, "One or more fields have a type other than string. Please check your input.")
+    
+    if (
+        [title, textContent, color, label].some(field => field !== undefined && field.trim() === "")
+    ) {
+        throw new ApiError(400, "Empty values are being passed, please check for empty values");
     }
+
 
 
     // Handle title
@@ -166,7 +168,7 @@ const createNote = asyncHandler( async (req, res) => {
     .json(
         new ApiResponse(
             201,
-            {noteData : note},
+            {noteData : note}, // the noteId key is _id
             "Note created successfully"
         )
     )

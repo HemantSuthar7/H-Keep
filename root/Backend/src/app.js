@@ -19,11 +19,19 @@ app.use(cookieParser()) // to successfully parse the cookies
 // Import Routes
 
 import userRouter from "./routes/user.routes.js";
-
+import noteRouter from "./routes/note.routes.js";
+import todoListRouter from "./routes/todoList.routes.js";
+import labelRouter from "./routes/label.routes.js"
 
 // Routes Declaration
 
-app.use("/api/v1/users", userRouter)
+app.use("/api/v1/users", userRouter);
+
+app.use("/api/v1/notes", noteRouter);
+
+app.use("/api/v1/lists", todoListRouter);
+
+app.use("/api/v1/labels", labelRouter);
 
 
 export {app};
