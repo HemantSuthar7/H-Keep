@@ -223,7 +223,7 @@ const updateList = asyncHandler( async (req, res) => {
     }
 
     if(
-        [todoListId, title, label, color].some( field !== undefined && field.trim() === "" )
+        [todoListId, title, label, color].some( field => field !== undefined && field.trim() === "" )
     ){
         throw new ApiError(400, "Empty values are being passed, please check for empty values")
     }
@@ -264,18 +264,26 @@ const updateList = asyncHandler( async (req, res) => {
         throw new ApiError(400, "the todo-items is not being passed, please ensure correct transfer")
     }
 
-    if(!Array.isArray(todoItems)){
+    const parsedTodoItems = todoItems.map(item => {
+        try {
+            return JSON.parse(item);
+        } catch (error) {
+            throw new ApiError(400, "Invalid todoItem format. Could not parse JSON.");
+        }
+    });
+
+    if(!Array.isArray(parsedTodoItems)){
         throw new ApiError(400, "The todo items is not an array, please ensure the correct data type")
     }
  
-    if(todoItems.length === 0){
+    if(parsedTodoItems.length === 0){
         throw new ApiError(400, "The todo-items cannot be empty")
     }
 
 
     // check if every element is an object and every object should have two keys "value" & "status" and further these keys should not be empty, null or undefined
-    for(let i = 0; i < todoItems.length; i++){
-        const item = todoItems[i];
+    for(let i = 0; i < parsedTodoItems.length; i++){
+        const item = parsedTodoItems[i];
 
         if(typeof item !== "object" || item === null){
             throw  new ApiError(400, `Item at index ${i} is not an object`)
@@ -285,7 +293,7 @@ const updateList = asyncHandler( async (req, res) => {
             throw new ApiError(400, `Item at index ${i} is missing the 'value' key`);
         }
 
-        if(typeof item.value !== String){
+        if(typeof item.value !== 'string'){
             throw new ApiError(400, `value of current todoItem object at index ${i} is not string`)
         }
 
@@ -297,7 +305,7 @@ const updateList = asyncHandler( async (req, res) => {
             throw new ApiError(400, `Item at index ${i} is missing the 'status' key`);
         }
 
-        if(typeof item.status !== Boolean){
+        if(typeof item.status !== 'boolean'){
             throw new ApiError(400, `status of current object at index ${i} is not a boolean`)
         }
 
@@ -307,7 +315,7 @@ const updateList = asyncHandler( async (req, res) => {
 
     }
 
-    const todoItemsToSave = todoItems
+    const todoItemsToSave = parsedTodoItems
 
 
     // Handle color
@@ -333,19 +341,12 @@ const updateList = asyncHandler( async (req, res) => {
     // Handle label
 
     let labelCategory;
-
-    if (typeof label === "string") {
+    if (label) {
         labelCategory = await Label.findById(label);
         if (!labelCategory) {
             throw new ApiError(400, "Invalid label ID");
         }
-        labelCategory = labelCategory._id
     }
-
-    if(typeof label === "object"){
-        labelCategory = null
-    }
-
 
 
 
@@ -429,7 +430,7 @@ const updateList = asyncHandler( async (req, res) => {
                 title : titleToSave,
                 todoItems : todoItemsToSave,
                 color : colorToSave,
-                labelCategory : labelCategory,
+                labelCategory : labelCategory ? labelCategory._id : null,
                 imageUrl : updatedTodoListImageUrlToSave
 
             }
@@ -518,6 +519,6 @@ const deleteList = asyncHandler( async (req, res) => {
 
 export {
     createList, // TESTING => SUCCESSFULL
-    updateList,
-    deleteList
+    updateList, // TESTING => SUCCESSFULL
+    deleteList 
 }
