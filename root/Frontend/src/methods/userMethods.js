@@ -65,8 +65,24 @@ const logoutUser = async () => {
 }
 
 
-// COMPLETE THIS METHOD ...
+
 const refreshAccessToken = async () => {
+
+    try {
+        const response = await axios.post("http://localhost:5000/api/v1/users/refresh-access-token", {}, {
+            withCredentials: true
+        });
+    
+        const {accessToken, refreshToken} = response.data;
+    
+        document.cookie = `accessToken=${accessToken}; path=/;`;
+        document.cookie = `refreshToken=${refreshToken}; path=/;`;
+    
+        return accessToken;
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        return null; // Return null if the refresh fails (you might want to log out the user in this case)
+    }
 
 }
 

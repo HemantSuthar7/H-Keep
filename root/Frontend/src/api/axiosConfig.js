@@ -9,28 +9,64 @@ const axiosInstance = axios.create({
     },
 });
 
-axiosInstance.interceptors.response.use(
+axiosInstance.interceptors.request.use(
+    (config) => {
+      // Get tokens from cookies
+      const accessToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('accessToken='))
+        ?.split('=')[1];
+  
+      const refreshToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('refreshToken='))
+        ?.split('=')[1];
+  
+      // If tokens exist, add them to headers
+      if (accessToken) {
+        config.headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      if (refreshToken) {
+        config.headers['x-refresh-token'] = refreshToken;
+      }
+  
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  
+  axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
   
-      if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
   
         try {
+          // Request to refresh the token
           const response = await axios.post(
             'http://your-backend-url/api/auth/refresh-token',
             {},
             {
-              withCredentials: true, // Ensure cookies are sent with the refresh token request
+              withCredentials: true, // Ensures cookies are sent with the refresh token request
             }
           );
   
-          // No need to manually handle tokens, as they are stored in cookies
+          const { accessToken: newAccessToken } = response.data;
+  
+          // Store the new access token in the cookie
+          document.cookie = `accessToken=${newAccessToken}; path=/;`;
+  
+          // Update the original request with the new access token and retry it
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+  
           return axiosInstance(originalRequest);
         } catch (refreshError) {
           console.error('Error refreshing token:', refreshError);
-          // Optionally, handle token refresh failure (e.g., log out the user)
           return Promise.reject(refreshError);
         }
       }
@@ -38,5 +74,6 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
   );
+  
   
   export default axiosInstance;
