@@ -3,6 +3,10 @@ import {asyncHandler} from "../utils/ascyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import JWT from "jsonwebtoken"
+import {Note} from "../Models/Note.models.js"
+import {TodoList} from "../Models/TodoList.models.js"
+import {Label} from "../Models/Label.models.js"
+import mongoose from "mongoose"
 
 
 /* SOME METHODS TO WRITE :
@@ -454,6 +458,61 @@ const updateAccountDetails = asyncHandler( async (req, res) => {
 } )
 
 
+const getCurrentUserData = asyncHandler( async (req, res) => {
+
+
+    const userId = req.user._id;
+
+    if(!userId){
+        throw new ApiError(400, "The user is not authenticated")
+    };
+
+    const [notes, todoLists, labels] = await Promise.all([
+
+        Note.aggregate([
+            {
+                $match : {
+                    createdBy : new mongoose.Types.ObjectId(userId) 
+                }
+            }
+        ]),
+
+        TodoList.aggregate([
+            {
+                $match : {
+                    createdBy : new mongoose.Types.ObjectId(userId)
+                }
+            }
+        ]),
+
+        Label.aggregate([
+            {
+                $match : {
+                    createdBy : new mongoose.Types.ObjectId(userId)
+                }
+            }
+        ])
+    ])
+
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                notes: notes || [],
+                todoLists: todoLists || [],
+                labels: labels || []
+            },
+            "User data retrieved successfully"
+        )
+    )
+
+} )
+
+
+
 // export all user methods
 export {
     registerUser, // TESTING ==> SUCCESSFULL
@@ -463,5 +522,5 @@ export {
     changeCurrentPassword, // TESTING ==> SUCCESSFULL 
     getCurrentUser, // TESTING ==> SUCCESSFULL
     updateAccountDetails, // TESTING ==> SUCCESSFULL
-    // INCLUDE one more method in the user controller for getting all of the user's notes and lists. 
+    getCurrentUserData // TESTING ==> SUCCESSFULL
 }
