@@ -65,6 +65,7 @@ const logoutUser = async () => {
 }
 
 
+// COMPLETE THIS METHOD ...
 const refreshAccessToken = async () => {
 
 }
@@ -85,10 +86,56 @@ const changeCurrentPassword = async ({oldPassword, newPassword}) => {
     }
 }
 
+
+
+const getCurrentUser = async () => {
+    try {
+
+        const response = await axios.post("http://localhost:5000/api/v1/users/get-current-user")
+
+        return response.data;
+        
+    } catch (error) {
+        console.log("Error from Backend : Get-Current-User Error : Error : ", error)
+    }
+}
+
+
+const updateAccountDetails = async ({email, fullName}) => {
+    try {
+
+        const response = await axios.patch("http://localhost:5000/api/v1/users/update-user-details", {
+            email,
+            fullName
+        })
+        
+        return response.data;
+
+    } catch (error) {
+        console.log("Error from Backend : Update-Account-Details Error : Error : ", error)
+    }
+}
+
+
+const getCurrentUserData = async () => {
+    try {
+        
+        const response = await axios.get("http://localhost:5000/api/v1/users/get-current-user-data")
+
+        return response.data
+
+    } catch (error) {
+        console.log("Error from Backend : Get-Current-User-Data Error : Error : ", error)
+    }
+}
+
 export {
     registerUser,
     loginUser,
     logoutUser,
     refreshAccessToken, // i have some doubts over the refresh token and access token transfers so any method related to tokens will be completed later on...
     changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+    getCurrentUserData
 }
