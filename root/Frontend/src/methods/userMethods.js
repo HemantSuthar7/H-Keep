@@ -14,7 +14,7 @@ import axios from "../api/axiosConfig.js"
 
 const registerUser = async ({username, password, email, fullName}) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/v1/users/register', {
+        const response = await axios.post('/users/register', {
             username,
             password,
             email,
@@ -30,11 +30,10 @@ const registerUser = async ({username, password, email, fullName}) => {
 }
 
 
-
 const loginUser = async ({username, email, password}) => {
     try {
         
-        const response = await axios.post("http://localhost:5000/api/v1/users/login" , {
+        const response = await axios.post("/users/login" , {
             username, 
             email, 
             password
@@ -51,7 +50,7 @@ const loginUser = async ({username, email, password}) => {
 const logoutUser = async () => {
     try {
 
-        const response = await axios.post("http://localhost:5000/api/v1/users/logout" , {
+        const response = await axios.post("/users/logout" , {
             username, 
             email, 
             password
@@ -65,11 +64,10 @@ const logoutUser = async () => {
 }
 
 
-
 const refreshAccessToken = async () => {
 
     try {
-        const response = await axios.post("http://localhost:5000/api/v1/users/refresh-access-token", {}, {
+        const response = await axios.post("/users/refresh-access-token", {}, {
             withCredentials: true
         });
     
@@ -90,7 +88,7 @@ const refreshAccessToken = async () => {
 const changeCurrentPassword = async ({oldPassword, newPassword}) => {
     try {
         
-        const response = await axios.post("http://localhost:5000/api/v1/users/change-password" , {
+        const response = await axios.post("/users/change-password" , {
            oldPassword,
            newPassword
         })
@@ -103,11 +101,10 @@ const changeCurrentPassword = async ({oldPassword, newPassword}) => {
 }
 
 
-
 const getCurrentUser = async () => {
     try {
 
-        const response = await axios.post("http://localhost:5000/api/v1/users/get-current-user")
+        const response = await axios.post("/users/get-current-user")
 
         return response.data;
         
@@ -120,7 +117,7 @@ const getCurrentUser = async () => {
 const updateAccountDetails = async ({email, fullName}) => {
     try {
 
-        const response = await axios.patch("http://localhost:5000/api/v1/users/update-user-details", {
+        const response = await axios.patch("/users/update-user-details", {
             email,
             fullName
         })
@@ -136,7 +133,7 @@ const updateAccountDetails = async ({email, fullName}) => {
 const getCurrentUserData = async () => {
     try {
         
-        const response = await axios.get("http://localhost:5000/api/v1/users/get-current-user-data")
+        const response = await axios.get("/users/get-current-user-data")
 
         return response.data
 
