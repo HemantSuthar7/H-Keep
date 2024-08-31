@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from "../store/authSlice";
-import { Logo, Input, Button } from "./index.js";
+import { Logo, Input, Button } from "./index.js"
 import { useDispatch } from 'react-redux';
-import authService from "../appwrite/auth.js";
 import { useForm } from 'react-hook-form';
+import {registerUser, getCurrentUser} from "../methods/userMethods.js"
 
 function Signup() {
   const dispatch = useDispatch();
@@ -19,11 +19,11 @@ function Signup() {
     try {
       console.log(data);
 
-      const userData = await authService.createAccount(data);
+      const userData = await registerUser(data);
       console.log(userData);
 
       if (userData) {
-        const userData_ = await authService.getCurrentUser();
+        const userData_ = await getCurrentUser();
         console.log(`the user data from getCurrentUser is : ${userData_}`);
 
         if (userData_) dispatch(login(userData_));
@@ -33,12 +33,12 @@ function Signup() {
     } catch (error) {
       setError(error.message);
 
-      if (error.message.includes("Invalid `email` param") || error.message.includes("Invalid credentials")) {
-        setFieldErrors((prev) => ({ ...prev, email: true }));
-      }
-      if (error.message.includes("Invalid `password` param") || error.message.includes("Password must be between 8 and 256 characters long")) {
-        setFieldErrors((prev) => ({ ...prev, password: true }));
-      }
+      // if (error.message.includes("Invalid `email` param") || error.message.includes("Invalid credentials")) {
+      //   setFieldErrors((prev) => ({ ...prev, email: true }));
+      // }
+      // if (error.message.includes("Invalid `password` param") || error.message.includes("Password must be between 8 and 256 characters long")) {
+      //   setFieldErrors((prev) => ({ ...prev, password: true }));
+      // }
     }
   };
 

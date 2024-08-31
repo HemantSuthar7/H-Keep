@@ -1,44 +1,51 @@
 import React from 'react';
+import { FaEdit, FaArrowLeft } from 'react-icons/fa'; // Icons for edit and back
 
-const ListViewer = ({ todoItems, onEdit, onBack }) => {
+const ListViewer = ({ title, imageSrc, todoItems }) => {
   return (
-    <div className="w-full max-w-1600 px-4 py-6">
-      <div className="flex justify-between mb-4">
-        <button
-          onClick={onBack}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          Back
+    <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-4 relative">
+      {/* Top Bar with Back, Color Icon, and Edit Button */}
+      <div className="flex justify-start items-center mb-2">
+        <button className="mr-2">
+          <FaArrowLeft className="text-gray-700 hover:text-gray-900" />
         </button>
-        <button
-          onClick={onEdit}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          Edit
-        </button>
-        <button
-          className="text-blue-500 hover:text-blue-700"
-        >
-          Color Palette
+        <div className="h-4 w-4 bg-blue-500 rounded-full mr-2"></div> {/* Color Icon */}
+        <button className="ml-auto">
+          <FaEdit className="text-gray-700 hover:text-gray-900" />
         </button>
       </div>
-      <ul className="space-y-4">
-        {todoItems.map((todoItem) => (
-          <li
-            key={todoItem.id}
-            className={`flex items-center justify-between ${
-              todoItem.status ? 'line-through' : ''
-            }`}
-          >
+
+      {/* Title */}
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-xl font-semibold">{title}</h2>
+        {imageSrc && (
+          <img
+            src={imageSrc}
+            alt="todo-related"
+            className="h-10 w-10 object-cover rounded"
+          />
+        )}
+      </div>
+
+      {/* Line between title and todo items */}
+      <hr className="border-gray-300 mb-4" />
+
+      {/* Todo Items */}
+      <ul className="space-y-3">
+        {todoItems.map((item, index) => (
+          <li key={index} className="flex items-center">
             <input
               type="checkbox"
-              checked={todoItem.status}
-              onChange={() => {
-                // Implement logic to update todoItem.status here
-              }}
-              className="mr-4"
+              checked={item.status}
+              className="mr-3 h-4 w-4"
+              readOnly
             />
-            <span>{todoItem.value}</span>
+            <span
+              className={`text-lg ${item.status ? 'line-through text-gray-500' : ''
+                }`}
+            >
+              {item.value}
+            </span>
           </li>
         ))}
       </ul>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login as authLogin } from "../store/authSlice";
-import { Logo, Input, Button } from "./index.js";
+import { Logo, Input, Button } from "./index.js"; 
 import { useDispatch } from 'react-redux';
-import authService from "../appwrite/auth.js";
 import { useForm } from 'react-hook-form';
+import {loginUser} from "../methods/userMethods.js"
 
 function Login() {
   const dispatch = useDispatch();
@@ -18,10 +18,11 @@ function Login() {
     setError("password", {});
 
     try {
-      const session = await authService.login(data);
+      console.log(data)
+      const session = await loginUser(data);
 
       if (session) {
-        const userData = await authService.getCurrentUser();
+        const userData = await getCurrentUser();
         if (userData) dispatch(authLogin({ userData }));
 
         navigate("/all-posts");

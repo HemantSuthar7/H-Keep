@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Button, Input, Select, RTE } from "../index";
-import noteService from '../../services/noteService'; // Assuming you have a service to handle API calls
+import { Button, Input, Select, RTE } from "./index";
+import {createNote, updateNote} from "../methods/noteMethods"
 
 function NoteEditorForm({ note }) {
   const { register, handleSubmit, setValue, watch, formState: { errors }, control, getValues } = useForm({
@@ -41,11 +41,11 @@ function NoteEditorForm({ note }) {
         };
         if (fileId) noteService.deleteFile(note.image);
 
-        const updatedNote = await noteService.updateNote(note._id, updatedData);
+        const updatedNote = await updateNote(note._id, updatedData);
         if (updatedNote) navigate(`/note/${updatedNote._id}`);
       } else {
         const newData = { ...data, image: fileId, userId: userData._id };
-        const newNote = await noteService.createNote(newData);
+        const newNote = await createNote(newData);
         if (newNote) navigate(`/note/${newNote._id}`);
       }
     } catch (error) {

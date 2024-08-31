@@ -1,37 +1,38 @@
 import React from 'react';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Icons for edit and delete
 
-const NoteViewer = ({ title, textContent, image, onEdit, onBack }) => {
+const NoteViewer = ({ title, content, imageSrc }) => {
   return (
-    <div className="w-full max-w-1600 px-4 py-6">
-      <div className="flex justify-between mb-4">
-        <button
-          onClick={onBack}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          Back
+    <div className="bg-[#881E29] text-white p-8 rounded-lg shadow-lg w-[1600px] mx-auto">
+      {/* Top bar with Edit and Delete buttons */}
+      <div className="flex justify-end space-x-4 mb-4">
+        <button className="text-white hover:text-gray-300">
+          <FaEdit className="text-xl" />
         </button>
-        <button
-          onClick={onEdit}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          Edit
-        </button>
-        <button
-          className="text-blue-500 hover:text-blue-700"
-        >
-          Color Palette
+        <button className="text-white hover:text-gray-300">
+          <FaTrashAlt className="text-xl" />
         </button>
       </div>
-      <h3 className="text-2xl font-semibold mb-4">{title}</h3>
-      <hr className="mb-4" />
-      <div className="prose max-w-none">
-        {textContent}
-      </div>
-      {image && (
-        <div className="mt-4">
-          <img src={image} alt={title} className="w-full rounded-lg" />
+
+      {/* Optional Image */}
+      {imageSrc && (
+        <div className="flex justify-center mb-4">
+          <img
+            src={imageSrc}
+            alt="Note related"
+            className="max-w-full rounded-lg"
+          />
         </div>
       )}
+
+      {/* Title */}
+      <h2 className="text-3xl font-semibold mb-4">{title}</h2>
+
+      {/* Line between title and content */}
+      <hr className="border-t-2 border-white mb-4" />
+
+      {/* Content */}
+      <p className="text-lg leading-relaxed">{content}</p>
     </div>
   );
 };
