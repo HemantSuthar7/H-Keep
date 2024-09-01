@@ -4,7 +4,7 @@ import { login as authLogin } from "../store/authSlice";
 import { Logo, Input, Button } from "./index.js"; 
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import {loginUser} from "../methods/userMethods.js"
+import {loginUser, getCurrentUser} from "../methods/userMethods.js"
 
 function Login() {
   const dispatch = useDispatch();
