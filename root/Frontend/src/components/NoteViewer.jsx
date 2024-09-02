@@ -2,6 +2,18 @@ import React from 'react';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Icons for edit and delete
 
 const NoteViewer = ({ title, content, imageSrc }) => {
+
+
+  const contentWithCenteredImages = post?.content
+    ? parse(post.content, {
+        replace: (domNode) => {
+          if (domNode.name === 'img') {
+            domNode.attribs.class = (domNode.attribs.class || '') + ' center-image';
+          }
+        },
+      })
+    : <p>No content available.</p>;
+
   return (
     <div className="bg-[#881E29] text-white p-8 rounded-lg shadow-lg w-[1600px] mx-auto">
       {/* Top bar with Edit and Delete buttons */}
@@ -32,7 +44,7 @@ const NoteViewer = ({ title, content, imageSrc }) => {
       <hr className="border-t-2 border-white mb-4" />
 
       {/* Content */}
-      <p className="text-lg leading-relaxed">{content}</p>
+      <p className="text-lg leading-relaxed">{contentWithCenteredImages}</p>
     </div>
   );
 };

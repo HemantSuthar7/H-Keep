@@ -18,14 +18,13 @@ function Login() {
     setError("password", {});
 
     try {
-      console.log(data)
       const session = await loginUser(data);
 
       if (session) {
         const userData = await getCurrentUser();
         if (userData) dispatch(authLogin({ userData }));
 
-        navigate("/all-posts");
+        navigate("/UserNotesAndLists");
       }
     } catch (err) {
       console.log(err); // Log the full error object for debugging

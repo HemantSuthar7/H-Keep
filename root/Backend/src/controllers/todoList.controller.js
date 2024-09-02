@@ -35,6 +35,8 @@ import {deleteFromCloudinary} from "../utils/FileDelete.js"
 
 const createList = asyncHandler( async (req, res) => {
 
+    console.log("The createList is being accessed by frontend part")
+
 
     const {title, todoItems, label, color} = req.body;
 

@@ -1,12 +1,10 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL : "http://localhost:5000/api/v1",
-    withCredentials : true,
-    timeout : 10000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: 'http://localhost:5000/api/v1',
+  withCredentials: true,
+  timeout: 10000,
+  headers: {},
 });
 
 axiosInstance.interceptors.request.use(
@@ -43,7 +41,8 @@ axiosInstance.interceptors.request.use(
     async (error) => {
       const originalRequest = error.config;
   
-      if (error.response.status === 401 && !originalRequest._retry) {
+      // Check if error.response is defined
+      if (error.response && error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
   
         try {
@@ -71,9 +70,11 @@ axiosInstance.interceptors.request.use(
         }
       }
   
+      // If error.response is undefined or another status code, return the error
       return Promise.reject(error);
     }
   );
+  
   
   
   export default axiosInstance;

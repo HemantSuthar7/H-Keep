@@ -10,15 +10,32 @@ function App() {
   const [loading, setLoading] = useState(true) 
   const dispatch = useDispatch();
 
-  useEffect(async () => {
-    const userData = await getCurrentUser();
-      if(userData){
-        dispatch(login(userData))
-      }else{
-        dispatch(logout())
+  useEffect(() => {
+    async function fetchData() {
+      // Check if the access token exists before making the API call
+      const accessToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('accessToken='))
+        ?.split('=')[1];
+
+      if (accessToken) {
+        // If the token exists, try to fetch the current user data
+        const userData = await getCurrentUser();
+        if (userData) {
+          dispatch(login(userData));
+        } else {
+          dispatch(logout());
+        }
+      } else {
+        // No token exists, treat the user as logged out
+        dispatch(logout());
       }
+
       setLoading(false);
-    });
+    }
+
+    fetchData();
+  }, [dispatch]);
   
 
   return !loading ? (

@@ -1,77 +1,86 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { Button, Input, Select, RTE } from "./index";
-import {createNote, updateNote} from "../methods/noteMethods"
+import { createNote, updateNote } from "../methods/noteMethods";
 
 function NoteEditorForm({ note }) {
-  const { register, handleSubmit, setValue, watch, formState: { errors }, control, getValues } = useForm({
+  const { register, handleSubmit, setValue, formState: { errors }, control, getValues, watch } = useForm({
     defaultValues: {
-      title: note?.title || "",
-      content: note?.content || "",
-      label: note?.label || "",
-      color: note?.color || "",
+        title: note?.title || "",
+        textContent: note?.textContent || "",
+        label: note?.label || "",
+        color: note?.color || "",
+        image: null,
     },
   });
 
   const [contentError, setContentError] = useState(false);
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.userData);
 
   const submit = async (data) => {
-    if (!data.content || data.content.trim() === "") {
-      setContentError(true);
-      return;
+    console.log("The data is:", data);
+
+    if (!data.textContent || data.textContent.trim() === "") {
+        setContentError(true);
+        return;
     }
 
     setContentError(false);
 
+    if (!data.title || data.title.trim() === "") {
+        console.error("Title is required");
+        return;
+    }
+
+    if (!data.color) {
+        console.error("Color is required");
+        return;
+    }
+
     try {
-      let fileId;
-      if (data.image && data.image[0]) {
-        const file = await noteService.uploadFile(data.image[0]);
-        fileId = file.$id;
-      }
+        const finalData = new FormData();
+        finalData.append('title', data.title.trim());
+        finalData.append('textContent', data.textContent.trim());
+        finalData.append('label', data.label);
+        finalData.append('color', data.color);
 
-      if (note) {
-        const updatedData = {
-          ...data,
-          image: fileId || note.image,
-        };
-        if (fileId) noteService.deleteFile(note.image);
+        if (data.image && data.image[0]) {
+            finalData.append('image', data.image[0]);
+        }
 
-        const updatedNote = await updateNote(note._id, updatedData);
-        if (updatedNote) navigate(`/note/${updatedNote._id}`);
-      } else {
-        const newData = { ...data, image: fileId, userId: userData._id };
-        const newNote = await createNote(newData);
-        if (newNote) navigate(`/note/${newNote._id}`);
-      }
+        if (note) {
+            const updatedNote = await updateNote(note._id, finalData);
+            if (updatedNote) navigate(`/note/${updatedNote._id}`);
+        } else {
+            const newNote = await createNote(finalData);
+            if (newNote) navigate(`/UserNotesAndLists`);
+        }
     } catch (error) {
-      console.error("Error submitting the note form:", error);
+        console.error("Error submitting the note form:", error);
     }
   };
 
   useEffect(() => {
     if (note) {
       setValue("title", note.title);
-      setValue("content", note.content);
+      setValue("textContent", note.textContent);
       setValue("label", note.label);
       setValue("color", note.color);
     }
   }, [note, setValue]);
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
+    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white">
       <div className="w-full md:w-2/3 px-2">
         <div className="mb-4">
           <Input
             label="Title :"
-            labelClassName="text-black"
+            labelClassName="text-gray-300"
             placeholder="Title"
-            className={`${errors.title ? 'border-red-500' : ''}`}
+            className={`${errors.title ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-white`}
             {...register("title", { required: "Title is required" })}
+            style={{ color: 'white', backgroundColor: '#2d2d2d' }}
           />
           {errors.title && <p className="text-red-500">{errors.title.message}</p>}
         </div>
@@ -79,10 +88,11 @@ function NoteEditorForm({ note }) {
           {contentError && <p className="text-red-500">Content is required</p>}
           <RTE
             label="Content :"
-            name="content"
+            name="textContent"
             control={control}
-            defaultValue={getValues("content")}
+            defaultValue={getValues("textContent")}
             onChange={() => setContentError(false)}
+            className="bg-gray-700 text-white"
           />
         </div>
       </div>
@@ -90,18 +100,18 @@ function NoteEditorForm({ note }) {
         <div className="mb-5">
           <Input
             label="Choose File"
-            labelClassName="text-black"
+            labelClassName="text-gray-300"
             type="file"
-            className={`block w-full mb-5 text-sm text-gray-900 border ${errors.image ? 'border-red-500' : 'border-gray-300'} rounded-lg cursor-pointer bg-gray-50`}
+            className={`block w-full mb-5 text-sm text-gray-300 border ${errors.image ? 'border-red-500' : 'border-gray-600'} rounded-lg cursor-pointer bg-gray-700`}
             accept="image/png, image/jpg, image/jpeg, image/gif"
-            {...register("image", { required: !note && "Image is required" })}
+            {...register("image")}
           />
           {errors.image && <p className="text-red-500">{errors.image.message}</p>}
         </div>
         {note?.image && (
           <div className="w-full mb-4">
             <img
-              src={noteService.getFilePreview(note.image)}
+              src={note.image}
               alt={note.title}
               className="rounded-lg"
             />
@@ -109,29 +119,31 @@ function NoteEditorForm({ note }) {
         )}
         <div className="mb-4">
           <Select
-            options={["Label 1", "Label 2", "Label 3"]} // Populate with real label options
+            options={["Label 1", "Label 2", "Label 3"]}
             label="Project H-Keep"
-            className={`${errors.label ? 'border-red-500' : ''}`}
-            {...register("label", { required: "Label is required" })}
+            className={`bg-gray-700 text-white ${errors.label ? 'border-red-500' : 'border-gray-600'}`}
+            {...register("label")}
           />
           {errors.label && <p className="text-red-500">{errors.label.message}</p>}
         </div>
         <div className="mb-4">
           <Select
-            options={["Red", "Coral", "Green"]} // Populate with real color options
+            options={["#6C394F", "#692B17", "#256377"]}
             label="Color"
-            className={`${errors.color ? 'border-red-500' : ''}`}
+            className={`bg-gray-700 text-white ${errors.color ? 'border-red-500' : 'border-gray-600'}`}
             {...register("color", { required: "Color is required" })}
           />
           {errors.color && <p className="text-red-500">{errors.color.message}</p>}
         </div>
-        <Button
-          className="w-full mt-4 md:mt-11 bg-red-500 text-white"
-          type="button"
-          onClick={() => noteService.deleteNote(note._id)}
-        >
-          Delete
-        </Button>
+        {note && (
+          <Button
+            className="w-full mt-4 md:mt-11 bg-red-500 text-white"
+            type="button"
+            onClick={() => deleteNote(note._id)}
+          >
+            Delete
+          </Button>
+        )}
         <Button
           className="w-full mt-4 md:mt-11 bg-green-500 text-white"
           type="submit"

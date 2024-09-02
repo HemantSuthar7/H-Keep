@@ -22,6 +22,7 @@ const registerUser = async ({username, password, email, fullName}) => {
           });
       
           // Return the response from the backend
+          console.log(response)
           return response.data;
 
     } catch (error) {

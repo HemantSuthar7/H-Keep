@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from "../store/authSlice";
-import { Logo, Input, Button } from "./index.js"
+import { Logo, Input, Button } from "./index.js";
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import {registerUser, getCurrentUser} from "../methods/userMethods.js"
+import { registerUser, getCurrentUser } from "../methods/userMethods.js";
 
 function Signup() {
   const dispatch = useDispatch();
@@ -24,21 +24,16 @@ function Signup() {
 
       if (userData) {
         const userData_ = await getCurrentUser();
-        console.log(`the user data from getCurrentUser is : ${userData_}`);
+        console.log(`The user data from getCurrentUser is: ${userData_}`);
 
         if (userData_) dispatch(login(userData_));
-        navigate("/");
+        navigate("/UserNotesAndLists");
       }
 
     } catch (error) {
       setError(error.message);
 
-      // if (error.message.includes("Invalid `email` param") || error.message.includes("Invalid credentials")) {
-      //   setFieldErrors((prev) => ({ ...prev, email: true }));
-      // }
-      // if (error.message.includes("Invalid `password` param") || error.message.includes("Password must be between 8 and 256 characters long")) {
-      //   setFieldErrors((prev) => ({ ...prev, password: true }));
-      // }
+      // If needed, you can add specific error handling for each field here.
     }
   };
 
@@ -72,11 +67,22 @@ function Signup() {
               <Input
                 label="Full Name : "
                 labelClassName="text-black"
-                placeholder="Enter your Full name"
+                placeholder="Enter your full name"
                 className={errors.name || fieldErrors.name ? 'border-red-500 text-red-500' : ''}
-                {...register("name", { required: "Full Name is required" })}
+                {...register("fullName", { required: "Full Name is required" })}
               />
               {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+            </div>
+
+            <div>
+              <Input
+                label="Username : "
+                labelClassName="text-black"
+                placeholder="Choose a username"
+                className={errors.username || fieldErrors.username ? 'border-red-500 text-red-500' : ''}
+                {...register("username", { required: "Username is required" })}
+              />
+              {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
             </div>
 
             <div>

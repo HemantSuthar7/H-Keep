@@ -39,17 +39,23 @@ const createNote = asyncHandler( async (req, res) => {
     // 6. Store the user reference in db
     // 7. if label is supplied then reference it in db
 
-    const {title, textContent, color, label} = req.body; // remember to receive image later
+    console.log("Received form fields:", req.body);
+    console.log("Received file:", req.file);
+    
+
+    const {title, textContent, color, label, imageUrl} = req.body; // remember to receive image later
+
+    console.log("Received data:", { title, textContent, label, color }); 
     
     if (
-        [title, textContent, color, label].some(field => field !== undefined && typeof field !== "string")
+        [title, textContent, color, label, imageUrl].some(field => field !== undefined && typeof field !== "string")
     ) {
         throw new ApiError(400, "One or more fields have a type other than string. Please check your input.");
     }
 
 
     if (
-        [title, textContent, color, label].some(field => field !== undefined && field.trim() === "")
+        [title, textContent, color].some(field => field !== undefined && field.trim() === "")
     ) {
         throw new ApiError(400, "Empty values are being passed, please check for empty values");
     }
@@ -129,7 +135,7 @@ const createNote = asyncHandler( async (req, res) => {
     }
 
 
-    // Handle image
+    //Handle image
 
     const noteImageLocalPath = req.file?.path;
     let noteImageUrlToSave = null

@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes for type checking
 
-const ListCard = ({ title, todoItems, label, imageUrl }) => {
+const ListCard = ({ title, todoItems = [], label, imageUrl }) => { // Default todoItems to an empty array
   const maxItems = imageUrl ? 4 : 7; // Adjust number of items based on image presence
   const displayedItems = todoItems.slice(0, maxItems);
 
@@ -43,6 +44,19 @@ const ListCard = ({ title, todoItems, label, imageUrl }) => {
       </div>
     </div>
   );
+};
+
+// Adding PropTypes to validate props
+ListCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  todoItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      status: PropTypes.bool.isRequired,
+    })
+  ),
+  label: PropTypes.string.isRequired,
+  imageUrl: PropTypes.string,
 };
 
 export default ListCard;

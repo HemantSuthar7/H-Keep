@@ -1,104 +1,203 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { createList, updateList } from '../methods/todoListMethods';
+import {Select} from "../components/index.js"
 
 const ListEditorForm = ({ existingListData }) => {
-  const [todoItems, setTodoItems] = useState(existingListData?.items || [{ value: '', status: false }]);
-  const [image, setImage] = useState(existingListData?.image || null);
-  const [color, setColor] = useState(existingListData?.color || '');
-  const [label, setLabel] = useState(existingListData?.label || '');
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      title: existingListData?.title || '',
+      todoItems: existingListData?.todoItems || [{ value: '', status: false }],
+      label: existingListData?.label || '',
+      color: existingListData?.color || '',
+      image: null,
+    },
+  });
 
-  const handleInputChange = (index, event) => {
-    const newTodoItems = [...todoItems];
-    newTodoItems[index].value = event.target.value;
-    setTodoItems(newTodoItems);
-  };
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'todoItems',
+  });
 
-  const addTodoItem = () => {
-    setTodoItems([...todoItems, { value: '', status: false }]);
-  };
+  const [imagePreview, setImagePreview] = useState(existingListData?.imageUrl || null);
+  const navigate = useNavigate();
 
-  const removeTodoItem = (index) => {
-    const newTodoItems = todoItems.filter((_, i) => i !== index);
-    setTodoItems(newTodoItems);
-  };
+  // Watch for image changes to update preview
+  const watchImage = watch('image');
 
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-  };
+  useEffect(() => {
+    if (existingListData) {
+      setValue("title", existingListData.title);
+      setValue("label", existingListData.label);
+      setValue("color", existingListData.color);
+      setValue("todoItems", existingListData.todoItems);
+    }
 
-  const handleSubmit = () => {
-    // Handle form submission
+    if (watchImage && watchImage.length > 0) {
+      const file = watchImage[0];
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(existingListData?.imageUrl || null);
+    }
+  }, [watchImage, existingListData, setValue]);
+
+  const onSubmit = async (data) => {
+    try {
+      console.log("The data is : ", data)
+      const formData = new FormData();
+
+      formData.append('title', data.title);
+      if (data.label) formData.append('label', data.label);
+      formData.append('color', data.color);
+
+      // Format todoItems as JSON strings
+      data.todoItems.forEach((item, index) => {
+        const todoItem = {
+          value: item.value || '',
+          status: item.status || false,
+        };
+        formData.append('todoItems', JSON.stringify(todoItem));
+      });
+
+      if (data.image && data.image[0]) {
+        formData.append('image', data.image[0]); // Attach the image file
+      }
+
+      if (existingListData) {
+        await updateList(formData);
+        alert('List updated successfully!');
+        navigate(`/list/${existingListData._id}`);
+      } else {
+        await createList(formData);
+        alert('List created successfully!');
+        navigate(`/UserNotesAndLists`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('An error occurred while submitting the form.');
+    }
   };
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white"
+    >
+      {/* Title Field */}
       <div className="mb-4">
+        <label htmlFor="title" className="block text-gray-300 font-medium mb-2">
+          Title:
+        </label>
         <input
+          id="title"
+          type="text"
+          placeholder="Enter list title"
+          {...register('title', { required: 'Title is required' })}
+          className={`w-full p-2 border ${errors.title ? 'border-red-500' : 'border-gray-600'} rounded-md bg-gray-700 text-white`}
+        />
+        {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+      </div>
+
+      {/* Image Upload */}
+      <div className="mb-4">
+        <label htmlFor="image" className="block text-gray-300 font-medium mb-2">
+          Image (optional):
+        </label>
+        <input
+          id="image"
           type="file"
           accept="image/*"
-          onChange={handleImageChange}
-          className="mb-2"
+          {...register('image')}
+          className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white"
         />
-        {image && (
-          <div className="mb-2">
-            <img src={URL.createObjectURL(image)} alt="Selected" className="max-h-40" />
+        {imagePreview && (
+          <div className="mt-4">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="max-h-60 rounded-md"
+            />
           </div>
         )}
-        {todoItems.map((item, index) => (
-          <div key={index} className="flex items-center mb-2">
+      </div>
+
+      {/* Todo Items */}
+      <div className="mb-6">
+        <label className="block text-gray-300 font-medium mb-2">Todo Items:</label>
+        {fields.map((item, index) => (
+          <div key={item.id} className="flex items-center mb-2 space-x-2">
             <input
               type="text"
-              value={item.value}
-              onChange={(e) => handleInputChange(index, e)}
-              maxLength="200"
-              className="flex-grow p-2 border rounded-md"
               placeholder="Enter todo item"
+              {...register(`todoItems.${index}.value`, {
+                required: 'Todo item is required',
+                maxLength: {
+                  value: 200,
+                  message: 'Maximum length is 200 characters',
+                },
+              })}
+              className={`flex-grow p-2 border ${errors.todoItems?.[index]?.value ? 'border-red-500' : 'border-gray-600'} rounded-md bg-gray-700 text-white`}
             />
-            <button onClick={() => addTodoItem()} className="ml-2 p-2 bg-green-500 text-white rounded">
-              Add
-            </button>
-            <button onClick={() => removeTodoItem(index)} className="ml-2 p-2 bg-red-500 text-white rounded">
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+            >
               Delete
             </button>
           </div>
         ))}
-      </div>
-
-      <div className="mb-4">
-        <label>Color</label>
-        <select
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          className="block p-2 mt-1 border rounded-md"
+        {errors.todoItems && <p className="text-red-500 text-sm mt-1">{errors.todoItems.message}</p>}
+        <button
+          type="button"
+          onClick={() => append({ value: '', status: false })}
+          className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
         >
-          <option value="">Select Color</option>
-          {/* Add color options here */}
-        </select>
+          Add Todo Item
+        </button>
       </div>
 
+      {/* Label Selection */}
       <div className="mb-4">
-        <label>Label</label>
-        <select
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          className="block p-2 mt-1 border rounded-md"
-        >
-          <option value="">Select Label</option>
-          {/* Add label options here */}
-        </select>
+        <Select
+          label="Label (optional):"
+          options={['Work', 'Personal', 'Urgent']} // You can replace these with your dynamic label options
+          className="bg-gray-700 text-white"
+          {...register('label')}
+        />
       </div>
 
-      <div>
-        {existingListData ? (
-          <button onClick={handleSubmit} className="w-full p-2 bg-green-600 text-white rounded">
-            Update List
-          </button>
-        ) : (
-          <button onClick={handleSubmit} className="w-full p-2 bg-blue-600 text-white rounded">
-            Create List
-          </button>
-        )}
+      {/* Color Selection */}
+      <div className="mb-4">
+        <Select
+          label="Color:"
+          options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+                    "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+                    "#4B443A", "#232427"]} // Color options provided
+          className="bg-gray-700 text-white"
+          {...register('color')}
+        />
       </div>
-    </div>
+
+      {/* Submit Button */}
+      <div className="text-right">
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+          disabled={isSubmitting}
+        >
+          {existingListData ? 'Update' : 'Create'}
+        </button>
+      </div>
+    </form>
   );
 };
 
