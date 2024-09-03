@@ -1,32 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Container, ListViewer } from "../components/index.js";
-import { getCurrentUserData } from "../methods/userMethods.js";
+import { useLocation } from 'react-router-dom';
 
 function List() {
-  const [lists, setLists] = useState([]);
+  const location = useLocation();
+  const { listData } = location.state || {};
 
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const userData = await getCurrentUserData();
-        
-        if (userData) {
-          // Assuming userData contains both notes and lists
-          const { lists } = userData;
-          setLists(lists);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchLists();
-  }, []);
+  console.log("The listdata form the list page is : ", listData)
 
   return (
     <div className='py-8'>
       <Container>
-        <ListViewer lists={lists} />
+        <ListViewer listData={listData} />
       </Container>
     </div>
   );

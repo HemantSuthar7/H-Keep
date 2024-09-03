@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Container, ListEditorForm } from "../components/index.js";
-import { getCurrentUserData } from "../methods/userMethods.js";
+import { useLocation } from 'react-router-dom';
 
 function EditList() {
-    const [listData, setListData] = useState(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getCurrentUserData();
-            if (data.lists && data.lists.length > 0) {
-                setListData(data.lists);
-            }
-        };
-
-        fetchData();
-    }, []);
+    const location = useLocation();
+    const { listData } = location.state || {}; // Access listData from location state
 
     return (
         <div className='py-8'>

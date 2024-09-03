@@ -40,15 +40,18 @@ function UserNotesAndLists() {
             imageUrl={note.imageUrl} // Assuming imageUrl is a URL
           />
         ))}
-        {todoLists.length > 0 && todoLists.map(list => (
-          <ListCard
-            key={list._id}
-            title={list.title}
-            todoItems={list.todoItems}
-            label={list.labelCategory || ''} // Ensure label is a string
-            imageUrl={list.imageUrl} // Assuming imageUrl is a URL
-          />
-        ))}
+        {todoLists.length > 0 && todoLists.map(list => {
+          return (
+            <ListCard
+              key={list._id}
+              _id={list._id}
+              title={list.title}
+              todoItems={list.todoItems}
+              label={list.labelCategory || ''} // Ensure label is a string
+              imageUrl={list.imageUrl} // Assuming imageUrl is a URL
+            />
+          );
+        })}
       </Container>
     </div>
   );

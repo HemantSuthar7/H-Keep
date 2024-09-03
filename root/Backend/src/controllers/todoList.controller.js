@@ -353,69 +353,66 @@ const updateList = asyncHandler( async (req, res) => {
 
     // Handle image
 
-    const todoListImageLocalPath = req.file?.path;
-    let updatedTodoListImageUrlToSave;
+    // Handle image
+const todoListImageLocalPath = req.file?.path;
+let updatedTodoListImageUrlToSave;
 
-    if(todoListImageLocalPath){
+if (todoListImageLocalPath) {
+    try {
+        console.log("we have got the image")
+        // First, upload the new image
+        const todoListImage = await uploadOnCloudinary(todoListImageLocalPath);
 
-        const todoListImage = await uploadOnCloudinary(todoListImageLocalPath)
-
-        if(!todoListImage.url){
-            throw new ApiError(500, "Error occured while uploading todoList-image")
+        if (!todoListImage.url) {
+            throw new ApiError(500, "Error occurred while uploading todoList-image");
         }
 
-        updatedTodoListImageUrlToSave = todoListImage.url
+        updatedTodoListImageUrlToSave = todoListImage.url;
 
-        // delete the old image from cloudinary
-
-        // get the old image url
-
-        let oldImageUrl;
-
-        // if there exists a url
-        if(typeof todoListToUpdate.imageUrl === "string"){
-            oldImageUrl = todoListToUpdate.imageUrl
-
+        // Now, delete the old image from Cloudinary
+        if (typeof todoListToUpdate.imageUrl === "string") {
+            const oldImageUrl = todoListToUpdate.imageUrl;
             const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
             const match = oldImageUrl.match(regex);
-            const public_id = match[1];
 
-            const deleteResponse = await deleteFromCloudinary(public_id, "image")
+            if (match) {
+                const public_id = match[1];
+                const deleteResponse = await deleteFromCloudinary(public_id, "image");
 
-            if (deleteResponse?.result === "ok") {
-                console.log("old image deleted successfully")
-            } else {
-                throw new ApiError(500, "There was an error while deleting the old todoList image")
+                if (deleteResponse?.result === "ok") {
+                    console.log("Old image deleted successfully");
+                } else {
+                    throw new ApiError(500, "There was an error while deleting the old todoList image");
+                }
             }
-
         }
 
+    } catch (error) {
+        throw new ApiError(500, "An error occurred during the image upload or deletion process");
     }
+} else {
+    console.log("As we did not got the image with data, so we will delete the old one")
+    updatedTodoListImageUrlToSave = null;
 
+    // If no new image is uploaded, delete the old one if it exists
+    if (typeof todoListToUpdate.imageUrl === "string") {
+        const oldImageUrl = todoListToUpdate.imageUrl;
+        const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+        const match = oldImageUrl.match(regex);
 
-    if(!todoListImageLocalPath){
-        updatedTodoListImageUrlToSave = null
-
-        let oldImageUrl;
-
-        // if there exists a url
-        if(typeof todoListToUpdate.imageUrl === "string"){
-            oldImageUrl = todoListToUpdate.imageUrl
-
-            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
-            const match = oldImageUrl.match(regex);
+        if (match) {
             const public_id = match[1];
-
-            const deleteResponse = await deleteFromCloudinary(public_id, "image")
+            const deleteResponse = await deleteFromCloudinary(public_id, "image");
 
             if (deleteResponse?.result === "ok") {
-                console.log("old image deleted successfully")
+                console.log("Old image deleted successfully");
             } else {
-                throw new ApiError(500, "There was an error while deleting the old todoList image")
+                throw new ApiError(500, "There was an error while deleting the old todoList image");
             }
-
         }
     }
+}
+
 
 
 

@@ -1,6 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const NoteCard = ({ title, content, label, imageUrl }) => {
+
+  const navigate = useNavigate();
+
+  const handleEditClick = () => {
+    navigate("/EditNote");
+  }
+
+
   return (
     <div className="w-[300px] h-[450px] p-4 bg-[#732333] rounded-lg shadow-lg text-white flex flex-col">
       {imageUrl && (
@@ -18,10 +27,10 @@ const NoteCard = ({ title, content, label, imageUrl }) => {
       <div className="flex justify-between items-center mt-4">
         <span className="bg-gray-700 rounded-full px-3 py-1 text-sm">{label}</span>
         <div className="flex gap-2">
-          <button className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center">
-            🎨 {/* Icon for color */}
-          </button>
-          <button className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center">
+          <button 
+          className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center"
+          onClick={handleEditClick}
+          >
             ✏️ {/* Icon for edit */}
           </button>
         </div>

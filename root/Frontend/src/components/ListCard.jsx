@@ -1,12 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes for type checking
+import { useNavigate } from 'react-router-dom';
 
-const ListCard = ({ title, todoItems = [], label, imageUrl }) => { // Default todoItems to an empty array
+const ListCard = ({ title, todoItems = [], label, imageUrl, _id }) => { // Default todoItems to an empty array
   const maxItems = imageUrl ? 4 : 7; // Adjust number of items based on image presence
   const displayedItems = todoItems.slice(0, maxItems);
+  const navigate = useNavigate();
+  const listData = { title, todoItems, label, imageUrl, _id };
+
+  const handleEditClick = (e) => {
+    e.stopPropagation(); // Prevent event propagation to the parent div
+    navigate("/EditList", { state: { listData } });
+  };
+
+  const handleClick = () => {
+    navigate("/List", { state: { listData } });
+  };
 
   return (
-    <div className="w-[300px] h-[450px] p-4 bg-[#20605D] rounded-lg shadow-lg text-white flex flex-col">
+    <div 
+      className="w-[300px] h-[450px] p-4 bg-[#20605D] rounded-lg shadow-lg text-white flex flex-col"
+      onClick={handleClick}
+    >
       {imageUrl && (
         <div className="flex-shrink-0 mb-3">
           <img src={imageUrl} alt="List" className="w-full h-32 object-cover rounded-md" />
@@ -32,12 +47,17 @@ const ListCard = ({ title, todoItems = [], label, imageUrl }) => { // Default to
         </ul>
       </div>
       <div className="flex justify-between items-center mt-4">
-        <span className="bg-gray-700 rounded-full px-3 py-1 text-sm">{label}</span>
+        <span 
+          className="bg-gray-700 rounded-full px-3 py-1 text-sm"
+          onClick={(e) => e.stopPropagation()} // Prevent click propagation for label
+        >
+          {label}
+        </span>
         <div className="flex gap-2">
-          <button className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center">
-            🎨 {/* Icon for color */}
-          </button>
-          <button className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center">
+          <button 
+            className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center"
+            onClick={handleEditClick}
+          >
             ✏️ {/* Icon for edit */}
           </button>
         </div>

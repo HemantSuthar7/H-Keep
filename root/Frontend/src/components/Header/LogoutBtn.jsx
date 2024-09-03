@@ -13,7 +13,7 @@ function LogoutBtn() {
         try {
           await logoutUser()
           dispatch(logout());
-          navigate("/")
+          navigate("/home")
         } catch (error) {
           console.log("Error in logout", error)
         }
