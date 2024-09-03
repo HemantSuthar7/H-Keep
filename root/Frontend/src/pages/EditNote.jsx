@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Container, NoteEditorForm } from "../components/index.js";
-import { getUserNotes } from "../methods/noteMethods.js";
+import { useLocation } from 'react-router-dom';
+
 
 function EditNote() {
-    const [noteData, setNoteData] = useState(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getUserNotes();
-            setNoteData(data);
-        };
-
-        fetchData();
-    }, []);
+    
+    const location = useLocation();
+    const {noteData} = location.state || {};
 
     return (
         <div className='py-8'>

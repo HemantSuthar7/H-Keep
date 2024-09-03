@@ -34,10 +34,12 @@ function UserNotesAndLists() {
         {notes.length > 0 && notes.map(note => (
           <NoteCard
             key={note._id}
+            id={note._id}
             title={note.title}
-            content={note.textContent}
+            textContent={note.textContent}
             label={note.labelCategory || ''} // Ensure label is a string
-            imageUrl={note.imageUrl} // Assuming imageUrl is a URL
+            imageUrl={note.imageUrl}
+            color={note.color} // Assuming imageUrl is a URL
           />
         ))}
         {todoLists.length > 0 && todoLists.map(list => {

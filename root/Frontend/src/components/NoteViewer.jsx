@@ -1,11 +1,17 @@
 import React from 'react';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Icons for edit and delete
+import { FaEdit, FaArrowLeft  } from 'react-icons/fa'; // Icons for edit and delete
+import { useNavigate } from 'react-router-dom';
+import parse from "html-react-parser"
 
-const NoteViewer = ({ title, content, imageSrc }) => {
+
+const NoteViewer = ({ noteData }) => {
+
+  const {title, textContent, label, imageUrl, color, id} = noteData || {};
+  const navigate = useNavigate();
 
 
-  const contentWithCenteredImages = post?.content
-    ? parse(post.content, {
+  const contentWithCenteredImages = noteData?.textContent
+    ? parse(noteData.textContent, {
         replace: (domNode) => {
           if (domNode.name === 'img') {
             domNode.attribs.class = (domNode.attribs.class || '') + ' center-image';
@@ -14,34 +20,44 @@ const NoteViewer = ({ title, content, imageSrc }) => {
       })
     : <p>No content available.</p>;
 
+    const handleBackClick = () => {
+      navigate("/UserNotesAndLists")
+    }
+
+    const handleEditClick = () => {
+      navigate("/EditNote", { state: { noteData } });
+    }
+
   return (
-    <div className="bg-[#881E29] text-white p-8 rounded-lg shadow-lg w-[1600px] mx-auto">
+    <div className="max-w-lg mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative">
       {/* Top bar with Edit and Delete buttons */}
-      <div className="flex justify-end space-x-4 mb-4">
-        <button className="text-white hover:text-gray-300">
-          <FaEdit className="text-xl" />
+      <div className="flex justify-between items-center mb-4">
+        <button className="mr-2" onClick={handleBackClick}>
+          <FaArrowLeft className="text-white hover:text-gray-400 text-xl" />
         </button>
-        <button className="text-white hover:text-gray-300">
-          <FaTrashAlt className="text-xl" />
+        <button className="ml-auto" onClick={handleEditClick}>
+          <FaEdit className="text-white hover:text-gray-400 text-xl" />
         </button>
       </div>
 
       {/* Optional Image */}
-      {imageSrc && (
+      {imageUrl && (
         <div className="flex justify-center mb-4">
           <img
-            src={imageSrc}
+            src={imageUrl}
             alt="Note related"
-            className="max-w-full rounded-lg"
+            className="w-full h-56 object-cover rounded-md"
           />
         </div>
       )}
 
       {/* Title */}
-      <h2 className="text-3xl font-semibold mb-4">{title}</h2>
+      <div className="mb-4">
+        <h2 className="text-3xl font-semibold">{title}</h2>
+      </div>
 
       {/* Line between title and content */}
-      <hr className="border-t-2 border-white mb-4" />
+      <hr className="border-gray-400 mb-2" />
 
       {/* Content */}
       <p className="text-lg leading-relaxed">{contentWithCenteredImages}</p>

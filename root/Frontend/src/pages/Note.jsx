@@ -1,33 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, NoteViewer } from "../components/index.js";
-import { getUserNotes } from "../methods/noteMethods.js";
+import { useLocation } from 'react-router-dom';
 
 function Note() {
-  const [notes, setNotes] = useState([]);
-
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const notesData = await getUserNotes();
-        
-        if (notesData) {
-          // You may want to add sorting here if needed
-          setNotes(notesData);
-        }
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-      }
-    };
-
-    fetchNotes();
-  }, []);
-
-  
-
+  const location = useLocation();
+  const {noteData} = location.state || {};
+ 
   return (
     <div className='py-8'>
       <Container>
-        <NoteViewer notes={notes} />
+        <NoteViewer noteData={noteData} />
       </Container>
     </div>
   );

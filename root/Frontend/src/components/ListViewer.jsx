@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 const ListViewer = ({ listData }) => {
   const { title, imageUrl, todoItems = [] } = listData || {};
 
+  // ❌📛❌⭕🚫🚫🚫🚫 DO NOT FORGET TO IMPLEMENT THE CHECKBOX UPDATION LOGIC
+
   // State to handle checkbox changes
   const [items, setItems] = useState(todoItems);
   const navigate = useNavigate();

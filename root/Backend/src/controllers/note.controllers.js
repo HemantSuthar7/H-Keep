@@ -261,7 +261,7 @@ const updateNote = asyncHandler( async (req, res) => {
 
 
     if (
-        [noteId, title, textContent, color, label].some(field => field !== undefined && field.trim() === "")
+        [noteId, title, textContent, color].some(field => field !== undefined && field.trim() === "")
     ) {
         throw new ApiError(400, "Empty values are being passed, please check for empty values");
     }

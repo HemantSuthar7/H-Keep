@@ -15,9 +15,10 @@ const createNote = async (formData) => {
     }
   };
 
-const updateNote = async (noteId, formData) => {
+const updateNote = async ( formData) => {
     try {
-      const response = await axios.patch(`/notes/update-Note/${noteId}`, formData, {
+      console.log("the formdata before update request",formData)
+      const response = await axios.patch(`/notes/update-Note`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",

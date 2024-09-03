@@ -4,29 +4,58 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Input, Select, RTE } from "./index";
 import { createNote, updateNote } from "../methods/noteMethods";
 
-function NoteEditorForm({ note }) {
+function NoteEditorForm({ noteData }) {
+  console.log("the noteData came is : ", noteData)
   const { register, handleSubmit, setValue, formState: { errors }, control, getValues, watch } = useForm({
     defaultValues: {
-        title: note?.title || "",
-        textContent: note?.textContent || "",
-        label: note?.label || "",
-        color: note?.color || "",
+        title: noteData?.title || "",
+        textContent: noteData?.textContent || "",
+        label: noteData?.label || "",
+        color: noteData?.color || "",
         image: null,
     },
   });
 
-  const [contentError, setContentError] = useState(false);
+  const [imagePreview, setImagePreview] = useState(noteData?.image || null);
   const navigate = useNavigate();
+
+  const watchImage = watch('image');
+  const watchColor = watch('color');
+
+  useEffect(() => {
+    if (noteData) {
+      setValue("title", noteData.title);
+      setValue("textContent", noteData.textContent);
+      setValue("label", noteData.label);
+      setValue("color", noteData.color);
+    }
+
+    if (watchImage && watchImage.length > 0) {
+      const file = watchImage[0];
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(noteData?.imageUrl || null);
+    }
+  }, [watchImage, noteData, setValue]);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const submit = async (data) => {
     console.log("The data is:", data);
 
     if (!data.textContent || data.textContent.trim() === "") {
-        setContentError(true);
+        console.error("Content is required");
         return;
     }
-
-    setContentError(false);
 
     if (!data.title || data.title.trim() === "") {
         console.error("Title is required");
@@ -49,26 +78,21 @@ function NoteEditorForm({ note }) {
             finalData.append('image', data.image[0]);
         }
 
-        if (note) {
-            const updatedNote = await updateNote(note._id, finalData);
-            if (updatedNote) navigate(`/note/${updatedNote._id}`);
+        if (noteData) {
+            finalData.append('noteId', noteData.id); // Append noteId for updating
+            console.log("Final data before update:", Array.from(finalData.entries()));
+            const updatedNote = await updateNote( finalData);
+            if (updatedNote) navigate(`/UserNotesAndLists`);
         } else {
+            console.log("Final data before creation:", Array.from(finalData.entries()));
             const newNote = await createNote(finalData);
             if (newNote) navigate(`/UserNotesAndLists`);
         }
     } catch (error) {
-        console.error("Error submitting the note form:", error);
+        console.error("Error submitting the noteData form:", error);
     }
-  };
+};
 
-  useEffect(() => {
-    if (note) {
-      setValue("title", note.title);
-      setValue("textContent", note.textContent);
-      setValue("label", note.label);
-      setValue("color", note.color);
-    }
-  }, [note, setValue]);
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white">
@@ -85,15 +109,14 @@ function NoteEditorForm({ note }) {
           {errors.title && <p className="text-red-500">{errors.title.message}</p>}
         </div>
         <div className="mb-4">
-          {contentError && <p className="text-red-500">Content is required</p>}
           <RTE
             label="Content :"
             name="textContent"
             control={control}
             defaultValue={getValues("textContent")}
-            onChange={() => setContentError(false)}
             className="bg-gray-700 text-white"
           />
+          {!getValues("textContent") && <p className="text-red-500">Content is required</p>}
         </div>
       </div>
       <div className="w-full md:w-1/3 px-2 mt-4 md:mt-0">
@@ -105,22 +128,23 @@ function NoteEditorForm({ note }) {
             className={`block w-full mb-5 text-sm text-gray-300 border ${errors.image ? 'border-red-500' : 'border-gray-600'} rounded-lg cursor-pointer bg-gray-700`}
             accept="image/png, image/jpg, image/jpeg, image/gif"
             {...register("image")}
+            onChange={handleImageChange} // Handle image change
           />
           {errors.image && <p className="text-red-500">{errors.image.message}</p>}
         </div>
-        {note?.image && (
+        {imagePreview && (
           <div className="w-full mb-4">
             <img
-              src={note.image}
-              alt={note.title}
+              src={imagePreview}
+              alt="Preview"
               className="rounded-lg"
             />
           </div>
         )}
         <div className="mb-4">
           <Select
-            options={["Label 1", "Label 2", "Label 3"]}
             label="Project H-Keep"
+            options={["Label 1", "Label 2", "Label 3"]}
             className={`bg-gray-700 text-white ${errors.label ? 'border-red-500' : 'border-gray-600'}`}
             {...register("label")}
           />
@@ -128,18 +152,20 @@ function NoteEditorForm({ note }) {
         </div>
         <div className="mb-4">
           <Select
-            options={["#6C394F", "#692B17", "#256377"]}
             label="Color"
+            options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+                      "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+                      "#4B443A", "#232427"]} // Replicated color options
             className={`bg-gray-700 text-white ${errors.color ? 'border-red-500' : 'border-gray-600'}`}
             {...register("color", { required: "Color is required" })}
           />
           {errors.color && <p className="text-red-500">{errors.color.message}</p>}
         </div>
-        {note && (
+        {noteData && (
           <Button
             className="w-full mt-4 md:mt-11 bg-red-500 text-white"
             type="button"
-            onClick={() => deleteNote(note._id)}
+            onClick={() => deleteNote(noteData._id)}
           >
             Delete
           </Button>
@@ -148,7 +174,7 @@ function NoteEditorForm({ note }) {
           className="w-full mt-4 md:mt-11 bg-green-500 text-white"
           type="submit"
         >
-          {note ? "Update" : "Create"}
+          {noteData ? "Update" : "Create"}
         </Button>
       </div>
     </form>
