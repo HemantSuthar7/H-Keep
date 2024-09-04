@@ -3,6 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { createList, updateList } from '../methods/todoListMethods';
 import { Select } from "../components/index.js";
+import { getCurrentUserData } from "../methods/userMethods.js";
 
 const ListEditorForm = ({ listData }) => {
   const {
@@ -17,7 +18,7 @@ const ListEditorForm = ({ listData }) => {
       title: listData?.title || '',
       todoItems: listData?.todoItems || [{ value: '', status: false }],
       label: listData?.label || '',
-      color: listData?.color || '',  // Default to empty string
+      color: listData?.color || '', // Default to empty string
       image: null,
       todoListId: listData?._id,
     },
@@ -28,17 +29,37 @@ const ListEditorForm = ({ listData }) => {
     name: 'todoItems',
   });
 
+  const [labels, setLabels] = useState([]);
   const [imagePreview, setImagePreview] = useState(listData?.imageUrl || null);
   const navigate = useNavigate();
 
   const watchImage = watch('image');
   const watchColor = watch('color');
 
+  // Fetch user data and labels
+  useEffect(() => {
+    const fetchLabelData = async () => {
+      try {
+        const userData = await getCurrentUserData();
+        console.log("Fetched userData:", userData);
+        
+        if (userData?.data?.labels) {
+          setLabels(userData.data.labels);
+          console.log("Labels set:", userData.data.labels);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchLabelData();
+  }, []);
+
   useEffect(() => {
     if (listData) {
       setValue("title", listData.title);
       setValue("label", listData.label);
-      setValue("color", listData.color);  // Automatically set color if it exists
+      setValue("color", listData.color); // Automatically set color if it exists
       setValue("todoItems", listData.todoItems);
       setValue("todoListId", listData._id);
     }
@@ -53,49 +74,53 @@ const ListEditorForm = ({ listData }) => {
 
   const onSubmit = async (data) => {
     try {
-        console.log("The data is : ", data);
-        const formData = new FormData();
+      console.log("The data is:", data);
+      const formData = new FormData();
 
-        formData.append('title', data.title);
-        if (data.label) formData.append('label', data.label);
-        formData.append('color', data.color);
+      formData.append('title', data.title);
+      
+      // Find the selected label's ID and append it to the formData
+      const selectedLabel = labels.find(label => label.labelName === data.label);
+      if (selectedLabel) {
+        formData.append('label', selectedLabel._id);
+      }
 
-        // Conditionally append the todoListId only if updating (listData exists)
-        if (listData?._id) {
-            formData.append('todoListId', listData._id);
-        }
+      formData.append('color', data.color);
 
-        data.todoItems.forEach((item, index) => {
-            const todoItem = {
-                value: item.value || '',
-                status: item.status || false,
-            };
-            formData.append('todoItems', JSON.stringify(todoItem));
-        });
+      // Conditionally append the todoListId only if updating (listData exists)
+      if (listData?._id) {
+        formData.append('todoListId', listData._id);
+      }
 
-        // Append the image if a new one is selected or the existing one from props
-        if (data.image && data.image[0]) {
-            formData.append('image', data.image[0]);
-        } else if (listData?.imageUrl && !data.image) {
-            const response = await fetch(listData.imageUrl);
-            const blob = await response.blob();
-            formData.append('image', blob, 'existing-image.jpg');
-        }
+      data.todoItems.forEach((item, index) => {
+        const todoItem = {
+          value: item.value || '',
+          status: item.status || false,
+        };
+        formData.append('todoItems', JSON.stringify(todoItem));
+      });
 
-        if (listData) {
-            await updateList(formData);
-            navigate("/List", { state: { listData } });
-        } else {
-            await createList(formData);
-            navigate(`/UserNotesAndLists`);
-        }
+      // Append the image if a new one is selected or the existing one from props
+      if (data.image && data.image[0]) {
+        formData.append('image', data.image[0]);
+      } else if (listData?.imageUrl && !data.image) {
+        const response = await fetch(listData.imageUrl);
+        const blob = await response.blob();
+        formData.append('image', blob, 'existing-image.jpg');
+      }
+
+      if (listData) {
+        await updateList(formData);
+        navigate("/List", { state: { listData } });
+      } else {
+        await createList(formData);
+        navigate(`/UserNotesAndLists`);
+      }
     } catch (error) {
-        console.error('Error submitting form:', error);
-        alert('An error occurred while submitting the form.');
+      console.error('Error submitting form:', error);
+      alert('An error occurred while submitting the form.');
     }
-};
-
-
+  };
 
   return (
     <form
@@ -180,7 +205,7 @@ const ListEditorForm = ({ listData }) => {
       <div className="mb-4">
         <Select
           label="Label (optional):"
-          options={['Work', 'Personal', 'Urgent']}
+          options={labels.map(label => label.labelName)}
           className="bg-gray-700 text-white"
           {...register('label')}
         />
@@ -188,7 +213,7 @@ const ListEditorForm = ({ listData }) => {
 
       {/* Color Selection */}
       <div className="mb-4">
-      <Select
+        <Select
           label="Color:"
           options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
                     "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
@@ -213,37 +238,3 @@ const ListEditorForm = ({ listData }) => {
 };
 
 export default ListEditorForm;
-
-
-
-
-/* sample successfull response from createList method : {
-  "statusCode": 200,
-  "data": {
-      "data": {
-          "title": "third list",
-          "todoItems": [
-              {
-                  "value": "Task 1",
-                  "status": false,
-                  "_id": "66d6fec029aee76b4f4d6ce2"
-              },
-              {
-                  "value": "Task 2",
-                  "status": true,
-                  "_id": "66d6fec029aee76b4f4d6ce3"
-              }
-          ],
-          "createdBy": "66b0ec81a815f84bc1aaa913",
-          "color": "#77172E",
-          "labelCategory": null,
-          "imageUrl": null,
-          "_id": "66d6fec029aee76b4f4d6ce1",
-          "createdAt": "2024-09-03T12:19:12.429Z",
-          "updatedAt": "2024-09-03T12:19:12.429Z",
-          "__v": 0
-      }
-  },
-  "message": "List created successfully",
-  "success": true
-} */

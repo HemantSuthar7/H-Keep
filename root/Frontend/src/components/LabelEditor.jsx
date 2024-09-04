@@ -1,120 +1,127 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createLabel, updateLabel, deleteLabel } from "../methods/labelMethods.js";
+import { getCurrentUserData } from "../methods/userMethods.js";
+import { FaHome, FaSave, FaTrashAlt, FaPlus, FaEdit } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-const LabelEditor = ({ labels, onSave, onDelete, onAddNew }) => {
+const LabelEditor = () => {
+  const [labels, setLabels] = useState([]);
   const [editingLabel, setEditingLabel] = useState(null);
   const [newLabel, setNewLabel] = useState('');
   const [newLabelMode, setNewLabelMode] = useState(false);
-  const [backgroundBlurred, setBackgroundBlurred] = useState(true);
+  const navigate = useNavigate();
 
-  const handleSave = (labelId, newLabelValue) => {
-    onSave(labelId, newLabelValue);
-    setEditingLabel(null);
+  useEffect(() => {
+    const fetchLabels = async () => {
+      const userData = await getCurrentUserData();
+      if (userData && userData.data && userData.data.labels) {
+        setLabels(userData.data.labels);
+      }
+    };
+    fetchLabels();
+  }, []);
+
+  const handleHomeClick = () => {
+    navigate("/UserNotesAndLists");
   };
 
-  const handleDelete = (labelId) => {
-    onDelete(labelId);
+  const handleSave = async (labelId, newLabelValue) => {
+    await updateLabel({ labelId, labelName: newLabelValue });
     setEditingLabel(null);
+    refreshLabels();
   };
 
-  const handleAddNew = () => {
-    onAddNew(newLabel);
+  const handleDelete = async (labelId) => {
+    await deleteLabel(labelId);
+    setEditingLabel(null);
+    refreshLabels();
+  };
+
+  const handleAddNew = async () => {
+    await createLabel({ labelName: newLabel });
     setNewLabel('');
     setNewLabelMode(false);
+    refreshLabels();
   };
 
-  const handleBlur = () => {
-    setBackgroundBlurred(false);
-  };
-
-  const handleFocus = () => {
-    setBackgroundBlurred(true);
+  const refreshLabels = async () => {
+    const userData = await getCurrentUserData();
+    if (userData && userData.data && userData.data.labels) {
+      setLabels(userData.data.labels);
+    }
   };
 
   return (
-    <div
-      className={`fixed top-0 left-0 w-full h-full flex justify-center items-center ${backgroundBlurred ? 'backdrop-blur-sm' : ''
-        } z-50`}
-    >
-      <div className="bg-gray-800 text-white p-4 rounded-lg w-96 shadow-lg">
-        <h2 className="text-lg mb-4">Edit Labels</h2>
+    <div className="bg-gray-800 text-white p-4 rounded-lg w-96 shadow-lg mx-8 my-8">
+      <div className="flex items-center mb-4">
+        <FaHome className="cursor-pointer text-xl hover:text-gray-400" onClick={handleHomeClick} />
+        <h2 className="text-lg ml-2">Edit Labels</h2>
+      </div>
 
-        {newLabelMode ? (
-          <div className="flex items-center mb-2">
-            <input
-              type="text"
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              className="flex-grow p-2 bg-gray-700 border-none rounded"
-              placeholder="Enter label name"
-              onBlur={handleBlur}
-              onFocus={handleFocus}
-            />
-            <button
-              onClick={handleAddNew}
-              className="ml-2 p-2 bg-green-600 rounded hover:bg-green-500"
+      {newLabelMode ? (
+        <div className="flex items-center mb-2">
+          <input
+            type="text"
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            className="flex-grow p-2 bg-gray-700 border-none rounded"
+            placeholder="Enter label name"
+          />
+          <FaSave
+            onClick={handleAddNew}
+            className="ml-2 text-green-600 cursor-pointer hover:text-green-500"
+          />
+        </div>
+      ) : (
+        <button
+          onClick={() => setNewLabelMode(true)}
+          className="w-full p-2 bg-gray-700 rounded hover:bg-gray-600 mb-4 flex items-center justify-center"
+        >
+          <FaPlus className="mr-2" /> Create new label
+        </button>
+      )}
+
+      <div>
+        {labels.map((label) =>
+          editingLabel && editingLabel._id === label._id ? (
+            <div key={label._id} className="flex items-center mb-2">
+              <input
+                type="text"
+                value={editingLabel.labelName}
+                onChange={(e) =>
+                  setEditingLabel({ ...editingLabel, labelName: e.target.value })
+                }
+                className="flex-grow p-2 bg-gray-700 border-none rounded"
+              />
+              <FaSave
+                onClick={() => handleSave(label._id, editingLabel.labelName)}
+                className="ml-2 text-green-600 cursor-pointer hover:text-green-500"
+              />
+              <FaTrashAlt
+                onClick={() => handleDelete(label._id)}
+                className="ml-2 text-red-600 cursor-pointer hover:text-red-500"
+              />
+            </div>
+          ) : (
+            <div
+              key={label._id}
+              className="flex items-center justify-between mb-2 p-2 bg-gray-700 rounded hover:bg-gray-600 cursor-pointer"
+              onClick={() => setEditingLabel({ ...label })}
             >
-              Add
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setNewLabelMode(true)}
-            className="w-full p-2 bg-gray-700 rounded hover:bg-gray-600 mb-4"
-          >
-            + Create new label
-          </button>
+              <span>{label.labelName}</span>
+              <FaEdit className="ml-2 text-gray-400 hover:text-white" />
+            </div>
+          )
         )}
+      </div>
 
-        <div>
-          {labels.map((label) =>
-            editingLabel === label.id ? (
-              <div key={label.id} className="flex items-center mb-2">
-                <input
-                  type="text"
-                  value={label.name}
-                  onChange={(e) =>
-                    setEditingLabel({ ...label, name: e.target.value })
-                  }
-                  className="flex-grow p-2 bg-gray-700 border-none rounded"
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                />
-                <button
-                  onClick={() => handleSave(label.id, editingLabel.name)}
-                  className="ml-2 p-2 bg-green-600 rounded hover:bg-green-500"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => handleDelete(label.id)}
-                  className="ml-2 p-2 bg-red-600 rounded hover:bg-red-500"
-                >
-                  Delete
-                </button>
-              </div>
-            ) : (
-              <div
-                key={label.id}
-                className="flex items-center justify-between mb-2 p-2 bg-gray-700 rounded hover:bg-gray-600 cursor-pointer"
-                onClick={() => setEditingLabel(label)}
-              >
-                <span>{label.name}</span>
-                <button className="ml-2 text-gray-400 hover:text-white">
-                  ✎
-                </button>
-              </div>
-            )
-          )}
-        </div>
-
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={() => setNewLabelMode(false)}
-            className="p-2 bg-gray-600 rounded hover:bg-gray-500"
-          >
-            Done
-          </button>
-        </div>
+      <div className="mt-4 flex justify-end">
+        <button
+          onClick={() => setNewLabelMode(false)}
+          className="p-2 bg-gray-600 rounded hover:bg-gray-500"
+        >
+          Done
+        </button>
       </div>
     </div>
   );

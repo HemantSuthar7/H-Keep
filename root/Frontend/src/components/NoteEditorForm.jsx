@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Select, RTE } from "./index";
 import { createNote, updateNote } from "../methods/noteMethods";
+import { getCurrentUserData } from "../methods/userMethods";
 
 function NoteEditorForm({ noteData }) {
   const { register, handleSubmit, setValue, formState: { errors }, control, getValues, watch } = useForm({
@@ -17,10 +18,26 @@ function NoteEditorForm({ noteData }) {
 
   const [imagePreview, setImagePreview] = useState(noteData?.imageUrl || null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [labels, setLabels] = useState([]);
   const navigate = useNavigate();
 
   const watchImage = watch('image');
   const watchColor = watch('color');
+
+  useEffect(() => {
+    const fetchLabelData = async () => {
+      try {
+        const userData = await getCurrentUserData();
+        if (userData?.data?.labels) {
+          setLabels(userData.data.labels);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchLabelData();
+  }, []);
 
   useEffect(() => {
     if (noteData) {
@@ -61,7 +78,13 @@ function NoteEditorForm({ noteData }) {
       const finalData = new FormData();
       finalData.append('title', data.title.trim());
       finalData.append('textContent', data.textContent.trim());
-      finalData.append('label', data.label);
+
+      // Find the selected label's ID and append it to the finalData
+      const selectedLabel = labels.find(label => label.labelName === data.label);
+      if (selectedLabel) {
+        finalData.append('label', selectedLabel._id);
+      }
+
       finalData.append('color', data.color);
 
       if (selectedImage) {
@@ -73,7 +96,7 @@ function NoteEditorForm({ noteData }) {
       }
 
       if (noteData) {
-        finalData.append('noteId', noteData.id); 
+        finalData.append('noteId', noteData.id);
         const updatedNote = await updateNote(finalData);
         if (updatedNote) navigate(`/UserNotesAndLists`);
       } else {
@@ -119,7 +142,7 @@ function NoteEditorForm({ noteData }) {
             className={`block w-full mb-5 text-sm text-gray-300 border ${errors.image ? 'border-red-500' : 'border-gray-600'} rounded-lg cursor-pointer bg-gray-700`}
             accept="image/png, image/jpg, image/jpeg, image/gif"
             {...register("image")}
-            onChange={handleImageChange} // Handle image change
+            onChange={handleImageChange}
           />
           {errors.image && <p className="text-red-500">{errors.image.message}</p>}
         </div>
@@ -134,8 +157,8 @@ function NoteEditorForm({ noteData }) {
         )}
         <div className="mb-4">
           <Select
-            label="Project H-Keep"
-            options={["Label 1", "Label 2", "Label 3"]}
+            label="Label"
+            options={labels.map(label => label.labelName)} // Map to label names
             className={`bg-gray-700 text-white ${errors.label ? 'border-red-500' : 'border-gray-600'}`}
             {...register("label")}
           />

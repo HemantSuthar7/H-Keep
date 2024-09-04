@@ -16,6 +16,7 @@ function Header() {
     { name: 'Add Note', slug: '/AddNote', active: authStatus },
     { name: 'Add List', slug: '/AddList', active: authStatus },
     { name: 'My Notes', slug: '/UserNotesAndLists', active: authStatus },
+    { name: 'Labels', slug: '/Label', active: authStatus },
   ];
 
   return (

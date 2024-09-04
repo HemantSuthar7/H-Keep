@@ -16,6 +16,7 @@ import Note from "./pages/Note.jsx"
 import Login from "./pages/Login.jsx"
 import Signup from './pages/Signup.jsx'
 import UserNotesAndLists from "./pages/UserNotesAndLists.jsx"
+import Label from './pages/Label.jsx'
 
 
 
@@ -97,6 +98,14 @@ const router = createBrowserRouter([
         element :( 
         <Protected authentication>
           <UserNotesAndLists/>
+        </Protected>
+        )
+      },
+      {
+        path : "/Label",
+        element :( 
+        <Protected authentication>
+          <Label/>
         </Protected>
         )
       },
