@@ -459,7 +459,11 @@ if (todoListImageLocalPath) {
 
 const deleteList = asyncHandler( async (req, res) => {
 
+    console.log("the delete list method is being accessed")
+
     const { todoListId } = req.params;
+
+    console.log("the received todoListId is : ", todoListId)
 
     if(!todoListId){
         throw new ApiError(400, "todoList-id is required for deletion")

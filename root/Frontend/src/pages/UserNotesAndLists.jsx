@@ -15,7 +15,7 @@ function UserNotesAndLists() {
           const combinedItems = [
             ...userData.data.notes.map(note => ({ ...note, type: 'note' })),
             ...userData.data.todoLists.map(list => ({ ...list, type: 'list' })),
-          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
           setSortedItems(combinedItems);
         }

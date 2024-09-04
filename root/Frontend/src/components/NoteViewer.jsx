@@ -1,10 +1,10 @@
 import React from 'react';
-import { FaEdit, FaArrowLeft } from 'react-icons/fa'; // Icons for edit and delete
+import { FaEdit, FaArrowLeft, FaTrash } from 'react-icons/fa'; // Import FaTrash for delete icon
 import { useNavigate } from 'react-router-dom';
 import parse from "html-react-parser";
+import {deleteNote} from "../methods/noteMethods.js"
 
 const NoteViewer = ({ noteData }) => {
-
   const { title, textContent, label, imageUrl, color, id } = noteData || {};
   const navigate = useNavigate();
 
@@ -26,16 +26,26 @@ const NoteViewer = ({ noteData }) => {
     navigate("/EditNote", { state: { noteData } });
   };
 
+  const handleDeleteClick = async () => {
+    await deleteNote(id);
+    navigate("/UserNotesAndLists");
+  };
+
   return (
-    <div className="max-w-lg mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative">
-      {/* Top bar with Edit and Delete buttons */}
+    <div className="max-w-xl mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative">
+      {/* Top bar with Back, Delete, and Edit buttons */}
       <div className="flex justify-between items-center mb-4">
         <button className="mr-2" onClick={handleBackClick}>
-          <FaArrowLeft className="text-white hover:text-gray-400 text-xl" />
+          <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
         </button>
-        <button className="ml-auto" onClick={handleEditClick}>
-          <FaEdit className="text-white hover:text-gray-400 text-xl" />
-        </button>
+        <div className="flex gap-4 ml-auto">
+          <button onClick={handleDeleteClick}>
+            <FaTrash className="text-white hover:text-red-600 text-2xl" />
+          </button>
+          <button onClick={handleEditClick}>
+            <FaEdit className="text-white hover:text-green-500 text-2xl" />
+          </button>
+        </div>
       </div>
 
       {/* Optional Image */}

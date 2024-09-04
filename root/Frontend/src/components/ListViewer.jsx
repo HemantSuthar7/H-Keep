@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { FaEdit, FaArrowLeft } from 'react-icons/fa';
+import { FaEdit, FaArrowLeft, FaTrash } from 'react-icons/fa'; 
 import { useNavigate } from 'react-router-dom';
-
+import { deleteList } from '../methods/todoListMethods';
 
 const ListViewer = ({ listData }) => {
-  const { title, imageUrl, todoItems = [] } = listData || {};
-
-  // ❌📛❌⭕🚫🚫🚫🚫 DO NOT FORGET TO IMPLEMENT THE CHECKBOX UPDATION LOGIC
+  const { title, imageUrl, todoItems = [], _id } = listData || {};
 
   // State to handle checkbox changes
   const [items, setItems] = useState(todoItems);
@@ -20,24 +18,33 @@ const ListViewer = ({ listData }) => {
   };
 
   const handleBackClick = () => {
-    navigate("/UserNotesAndLists")
-  }
-
+    navigate("/UserNotesAndLists");
+  };
 
   const handleEditClick = () => {
     navigate("/EditList", { state: { listData } });
-  }
+  };
+
+  const handleDeleteClick = async () => {
+    await deleteList(_id);
+    navigate("/UserNotesAndLists");
+  };
 
   return (
     <div className="max-w-lg mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative">
-      {/* Top Bar with Back, Color Icon, and Edit Button */}
+      {/* Top Bar with Back, Delete, and Edit Buttons */}
       <div className="flex justify-between items-center mb-4">
         <button className="mr-2" onClick={handleBackClick}>
-          <FaArrowLeft className="text-white hover:text-gray-400 text-xl" />
+          <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
         </button>
-        <button className="ml-auto" onClick={handleEditClick}>
-          <FaEdit className="text-white hover:text-gray-400 text-xl" />
-        </button>
+        <div className="flex gap-4 ml-auto">
+          <button onClick={handleDeleteClick}>
+            <FaTrash className="text-white hover:text-red-600 text-2xl" />
+          </button>
+          <button onClick={handleEditClick}>
+            <FaEdit className="text-white hover:text-green-500 text-2xl" />
+          </button>
+        </div>
       </div>
 
       {/* Image */}

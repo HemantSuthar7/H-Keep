@@ -31,7 +31,7 @@ const updateList = async (formData) => {
 
 const deleteList = async (todoListId) => {
     try {
-        const response = await axiosInstance.delete(`/lists/delete-TodoList/${todoListId}`);
+        const response = await axiosInstance.get(`/lists/delete-TodoList/${todoListId}`);
         return response.data;
     } catch (error) {
         console.log("Backend Error : Delete-List : Error : ", error);
