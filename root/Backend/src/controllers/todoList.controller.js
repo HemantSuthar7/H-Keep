@@ -215,6 +215,8 @@ const updateList = asyncHandler( async (req, res) => {
     
     const {todoListId, title, todoItems, label, color} = req.body;
 
+    console.log("the req.file data is : ", req.file)
+    console.log("the req.body data is : ", req.body)
 
     
     if(

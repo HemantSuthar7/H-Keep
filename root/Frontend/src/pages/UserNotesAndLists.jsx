@@ -25,12 +25,18 @@ function UserNotesAndLists() {
             ...userData.data.notes.map(note => ({
               ...note,
               type: 'note',
-              labelCategory: labelMapping[note.labelCategory] || note.labelCategory
+              label: {
+                name: labelMapping[note.labelCategory] || note.labelCategory,
+                id: note.labelCategory
+              }
             })),
             ...userData.data.todoLists.map(list => ({
               ...list,
               type: 'list',
-              labelCategory: labelMapping[list.labelCategory] || list.labelCategory
+              label: {
+                name: labelMapping[list.labelCategory] || list.labelCategory,
+                id: list.labelCategory
+              }
             })),
           ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
@@ -55,7 +61,7 @@ function UserNotesAndLists() {
                 id={item._id}
                 title={item.title}
                 textContent={item.textContent}
-                label={item.labelCategory || ''}
+                label={item.label.name || ''}
                 imageUrl={item.imageUrl}
                 color={item.color}
               />
@@ -65,7 +71,8 @@ function UserNotesAndLists() {
                 _id={item._id}
                 title={item.title}
                 todoItems={item.todoItems}
-                label={item.labelCategory || ''}
+                labelName={item.label.name || ''}
+                labelId={item.label.id || ''}
                 imageUrl={item.imageUrl}
                 color={item.color}
               />

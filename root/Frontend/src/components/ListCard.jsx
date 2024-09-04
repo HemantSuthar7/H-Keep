@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes for type checking
 import { useNavigate } from 'react-router-dom';
 
-const ListCard = ({ title, todoItems = [], label, imageUrl, _id, color }) => { // Added color prop
+const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labelId }) => { // Added color prop
   const maxItems = imageUrl ? 6 : 11; // Adjust number of items based on image presence
   const displayedItems = todoItems.slice(0, maxItems);
   const navigate = useNavigate();
-  const listData = { title, todoItems, label, imageUrl, _id, color }; // Added color to listData
+  const listData = { title, todoItems, labelName, imageUrl, _id, color, labelId }; // Added color to listData
 
   const handleEditClick = (e) => {
     e.stopPropagation(); // Prevent event propagation to the parent div
@@ -40,7 +40,10 @@ const ListCard = ({ title, todoItems = [], label, imageUrl, _id, color }) => { /
                 readOnly
                 className="mr-2 bg-white border-gray-400 cursor-not-allowed"
               />
-              <span className="text-base overflow-hidden overflow-ellipsis" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 1 }}>
+              <span 
+                className={`text-base overflow-hidden overflow-ellipsis ${item.status ? 'line-through text-gray-500' : ''}`} 
+                style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 1 }}
+              >
                 {item.value}
               </span>
             </li>
@@ -50,9 +53,9 @@ const ListCard = ({ title, todoItems = [], label, imageUrl, _id, color }) => { /
       <div className="flex justify-between items-center mt-4">
         <span 
           className="bg-gray-700 rounded-full px-3 py-1 text-sm"
-          onClick={(e) => e.stopPropagation()} // Prevent click propagation for label
+          onClick={(e) => e.stopPropagation()} // Prevent click propagation for labelName
         >
-          {label}
+          {labelName}
         </span>
         <div className="flex gap-2">
           <button 
@@ -76,7 +79,7 @@ ListCard.propTypes = {
       status: PropTypes.bool.isRequired,
     })
   ),
-  label: PropTypes.string.isRequired,
+  labelName: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
   color: PropTypes.string.isRequired, // Color prop validation
 };
