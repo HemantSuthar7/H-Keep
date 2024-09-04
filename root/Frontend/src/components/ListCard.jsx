@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes for type checking
 import { useNavigate } from 'react-router-dom';
 
-const ListCard = ({ title, todoItems = [], label, imageUrl, _id }) => { // Default todoItems to an empty array
-  const maxItems = imageUrl ? 4 : 7; // Adjust number of items based on image presence
+const ListCard = ({ title, todoItems = [], label, imageUrl, _id, color }) => { // Added color prop
+  const maxItems = imageUrl ? 7 : 12; // Adjust number of items based on image presence
   const displayedItems = todoItems.slice(0, maxItems);
   const navigate = useNavigate();
-  const listData = { title, todoItems, label, imageUrl, _id };
+  const listData = { title, todoItems, label, imageUrl, _id, color }; // Added color to listData
 
   const handleEditClick = (e) => {
     e.stopPropagation(); // Prevent event propagation to the parent div
@@ -19,8 +19,9 @@ const ListCard = ({ title, todoItems = [], label, imageUrl, _id }) => { // Defau
 
   return (
     <div 
-      className="w-[300px] h-[450px] p-4 bg-[#20605D] rounded-lg shadow-lg text-white flex flex-col"
+      className="w-[300px] h-[450px] p-4 rounded-lg shadow-lg text-white flex flex-col mx-3 my-3"
       onClick={handleClick}
+      style={{ backgroundColor: color }} // Set background color dynamically
     >
       {imageUrl && (
         <div className="flex-shrink-0 mb-3">
@@ -28,7 +29,7 @@ const ListCard = ({ title, todoItems = [], label, imageUrl, _id }) => { // Defau
         </div>
       )}
       <div className="flex-grow">
-        <h2 className="text-xl font-semibold mb-2">{title}</h2>
+        <h2 className="text-2xl font-semibold mb-2">{title}</h2>
         <hr className="border-gray-400 mb-2" />
         <ul>
           {displayedItems.map((item, index) => (
@@ -77,6 +78,7 @@ ListCard.propTypes = {
   ),
   label: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
+  color: PropTypes.string.isRequired, // Color prop validation
 };
 
 export default ListCard;

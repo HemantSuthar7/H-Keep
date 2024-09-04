@@ -1,11 +1,9 @@
-// In UserNotesAndLists.jsx
 import React, { useEffect, useState } from 'react';
 import { Container, NoteCard, ListCard } from "../components/index.js";
 import { getCurrentUserData } from "../methods/userMethods.js";
 
 function UserNotesAndLists() {
-  const [notes, setNotes] = useState([]);
-  const [todoLists, setTodoLists] = useState([]);
+  const [sortedItems, setSortedItems] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -13,12 +11,13 @@ function UserNotesAndLists() {
         const userData = await getCurrentUserData();
         
         if (userData && userData.data) {
-          // Sort notes and todoLists by date, latest first
-          const sortedNotes = userData.data.notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-          const sortedTodoLists = userData.data.todoLists.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          // Combine and sort notes and todoLists by date, latest first
+          const combinedItems = [
+            ...userData.data.notes.map(note => ({ ...note, type: 'note' })),
+            ...userData.data.todoLists.map(list => ({ ...list, type: 'list' })),
+          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-          setNotes(sortedNotes);
-          setTodoLists(sortedTodoLists);
+          setSortedItems(combinedItems);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -29,33 +28,36 @@ function UserNotesAndLists() {
   }, []);
 
   return (
-    <div>
-      <Container>
-        {notes.length > 0 && notes.map(note => (
-          <NoteCard
-            key={note._id}
-            id={note._id}
-            title={note.title}
-            textContent={note.textContent}
-            label={note.labelCategory || ''} // Ensure label is a string
-            imageUrl={note.imageUrl}
-            color={note.color} // Assuming imageUrl is a URL
-          />
-        ))}
-        {todoLists.length > 0 && todoLists.map(list => {
-          return (
-            <ListCard
-              key={list._id}
-              _id={list._id}
-              title={list.title}
-              todoItems={list.todoItems}
-              label={list.labelCategory || ''} // Ensure label is a string
-              imageUrl={list.imageUrl} // Assuming imageUrl is a URL
+    <Container>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {sortedItems.map(item => (
+          item.type === 'note' ? (
+            <NoteCard
+              key={item._id}
+              id={item._id}
+              title={item.title}
+              textContent={item.textContent}
+              label={item.labelCategory || ''}
+              imageUrl={item.imageUrl}
+              color={item.color}
             />
-          );
-        })}
-      </Container>
+          ) : (
+            <ListCard
+              key={item._id}
+              _id={item._id}
+              title={item.title}
+              todoItems={item.todoItems}
+              label={item.labelCategory || ''}
+              imageUrl={item.imageUrl}
+              color={item.color}
+            />
+          )
+        ))}
+      </div>
     </div>
+  </Container>
+  
   );
 }
 

@@ -1,13 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import parse from 'html-react-parser';
 
 const NoteCard = ({ title, textContent, label, imageUrl, color, id }) => {
-
   const navigate = useNavigate();
   const noteData = { title, textContent, label, imageUrl, color, id };
 
+  // Function to filter out images from the parsed HTML content
+  const removeImages = (domNode) => {
+    if (domNode.name === 'img') {
+      return null; // Exclude images
+    }
+  };
+
   const handleClick = () => {
-    navigate("/Note", { state : {noteData} })
+    navigate("/Note", { state : {noteData} });
   };
 
   const handleEditClick = (e) => {
@@ -17,8 +24,9 @@ const NoteCard = ({ title, textContent, label, imageUrl, color, id }) => {
 
   return (
     <div 
-      className="w-[300px] h-[450px] p-4 bg-[#732333] rounded-lg shadow-lg text-white flex flex-col" 
+      className="w-[300px] h-[450px] p-4 rounded-lg shadow-lg text-white flex flex-col mx-3 my-3" 
       onClick={handleClick}
+      style={{ backgroundColor: color }} // Set background color dynamically
     >
       {imageUrl && (
         <div className="flex-shrink-0 mb-3">
@@ -26,11 +34,11 @@ const NoteCard = ({ title, textContent, label, imageUrl, color, id }) => {
         </div>
       )}
       <div className="flex-grow">
-        <h2 className="text-xl font-semibold mb-2">{title}</h2>
+        <h2 className="text-2xl font-semibold mb-2">{title}</h2>
         <hr className="border-gray-400 mb-2" />
-        <p className="text-base overflow-hidden overflow-ellipsis" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: imageUrl ? 4 : 7 }}>
-          {textContent}
-        </p>
+        <div className="text-base overflow-hidden overflow-ellipsis" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: imageUrl ? 7 : 12 }}>
+          {parse(textContent, { replace: removeImages })} 
+        </div>
       </div>
       <div className="flex justify-between items-center mt-4">
         <span 

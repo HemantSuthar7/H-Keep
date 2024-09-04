@@ -1,14 +1,12 @@
 import React from 'react';
-import { FaEdit, FaArrowLeft  } from 'react-icons/fa'; // Icons for edit and delete
+import { FaEdit, FaArrowLeft } from 'react-icons/fa'; // Icons for edit and delete
 import { useNavigate } from 'react-router-dom';
-import parse from "html-react-parser"
-
+import parse from "html-react-parser";
 
 const NoteViewer = ({ noteData }) => {
 
-  const {title, textContent, label, imageUrl, color, id} = noteData || {};
+  const { title, textContent, label, imageUrl, color, id } = noteData || {};
   const navigate = useNavigate();
-
 
   const contentWithCenteredImages = noteData?.textContent
     ? parse(noteData.textContent, {
@@ -18,15 +16,15 @@ const NoteViewer = ({ noteData }) => {
           }
         },
       })
-    : <p>No content available.</p>;
+    : <div>No content available.</div>;
 
-    const handleBackClick = () => {
-      navigate("/UserNotesAndLists")
-    }
+  const handleBackClick = () => {
+    navigate("/UserNotesAndLists");
+  };
 
-    const handleEditClick = () => {
-      navigate("/EditNote", { state: { noteData } });
-    }
+  const handleEditClick = () => {
+    navigate("/EditNote", { state: { noteData } });
+  };
 
   return (
     <div className="max-w-lg mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative">
@@ -60,7 +58,9 @@ const NoteViewer = ({ noteData }) => {
       <hr className="border-gray-400 mb-2" />
 
       {/* Content */}
-      <p className="text-lg leading-relaxed">{contentWithCenteredImages}</p>
+      <div className="text-lg leading-relaxed">
+        {contentWithCenteredImages}
+      </div>
     </div>
   );
 };
