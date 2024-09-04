@@ -5,18 +5,18 @@ import { Button, Input, Select, RTE } from "./index";
 import { createNote, updateNote } from "../methods/noteMethods";
 
 function NoteEditorForm({ noteData }) {
-  console.log("the noteData came is : ", noteData)
   const { register, handleSubmit, setValue, formState: { errors }, control, getValues, watch } = useForm({
     defaultValues: {
-        title: noteData?.title || "",
-        textContent: noteData?.textContent || "",
-        label: noteData?.label || "",
-        color: noteData?.color || "",
-        image: null,
+      title: noteData?.title || "",
+      textContent: noteData?.textContent || "",
+      label: noteData?.label || "",
+      color: noteData?.color || "",
+      image: null,
     },
   });
 
-  const [imagePreview, setImagePreview] = useState(noteData?.image || null);
+  const [imagePreview, setImagePreview] = useState(noteData?.imageUrl || null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
 
   const watchImage = watch('image');
@@ -28,71 +28,62 @@ function NoteEditorForm({ noteData }) {
       setValue("textContent", noteData.textContent);
       setValue("label", noteData.label);
       setValue("color", noteData.color);
+      setImagePreview(noteData.imageUrl || null);
     }
 
-    if (watchImage && watchImage.length > 0) {
-      const file = watchImage[0];
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImagePreview(noteData?.imageUrl || null);
+    if (selectedImage) {
+      setImagePreview(URL.createObjectURL(selectedImage));
     }
-  }, [watchImage, noteData, setValue]);
+  }, [selectedImage, noteData, setValue]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    setSelectedImage(file);
   };
 
   const submit = async (data) => {
-    console.log("The data is:", data);
-
-    if (!data.textContent || data.textContent.trim() === "") {
-        console.error("Content is required");
-        return;
+    if (!data.textContent.trim()) {
+      console.error("Content is required");
+      return;
     }
 
-    if (!data.title || data.title.trim() === "") {
-        console.error("Title is required");
-        return;
+    if (!data.title.trim()) {
+      console.error("Title is required");
+      return;
     }
 
     if (!data.color) {
-        console.error("Color is required");
-        return;
+      console.error("Color is required");
+      return;
     }
 
     try {
-        const finalData = new FormData();
-        finalData.append('title', data.title.trim());
-        finalData.append('textContent', data.textContent.trim());
-        finalData.append('label', data.label);
-        finalData.append('color', data.color);
+      const finalData = new FormData();
+      finalData.append('title', data.title.trim());
+      finalData.append('textContent', data.textContent.trim());
+      finalData.append('label', data.label);
+      finalData.append('color', data.color);
 
-        if (data.image && data.image[0]) {
-            finalData.append('image', data.image[0]);
-        }
+      if (selectedImage) {
+        finalData.append('image', selectedImage);
+      } else if (noteData?.imageUrl && !data.image) {
+        const response = await fetch(noteData.imageUrl);
+        const blob = await response.blob();
+        finalData.append('image', blob, 'existing-image.jpg');
+      }
 
-        if (noteData) {
-            finalData.append('noteId', noteData.id); // Append noteId for updating
-            console.log("Final data before update:", Array.from(finalData.entries()));
-            const updatedNote = await updateNote( finalData);
-            if (updatedNote) navigate(`/UserNotesAndLists`);
-        } else {
-            console.log("Final data before creation:", Array.from(finalData.entries()));
-            const newNote = await createNote(finalData);
-            if (newNote) navigate(`/UserNotesAndLists`);
-        }
+      if (noteData) {
+        finalData.append('noteId', noteData.id); 
+        const updatedNote = await updateNote(finalData);
+        if (updatedNote) navigate(`/UserNotesAndLists`);
+      } else {
+        const newNote = await createNote(finalData);
+        if (newNote) navigate(`/UserNotesAndLists`);
+      }
     } catch (error) {
-        console.error("Error submitting the noteData form:", error);
+      console.error("Error submitting the form:", error);
     }
-};
-
+  };
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white">
@@ -155,26 +146,19 @@ function NoteEditorForm({ noteData }) {
             label="Color"
             options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
                       "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
-                      "#4B443A", "#232427"]} // Replicated color options
+                      "#4B443A", "#232427"]}
             className={`bg-gray-700 text-white ${errors.color ? 'border-red-500' : 'border-gray-600'}`}
-            {...register("color", { required: "Color is required" })}
+            {...register("color")}
           />
           {errors.color && <p className="text-red-500">{errors.color.message}</p>}
         </div>
-        {noteData && (
-          <Button
-            className="w-full mt-4 md:mt-11 bg-red-500 text-white"
-            type="button"
-            onClick={() => deleteNote(noteData._id)}
-          >
-            Delete
-          </Button>
-        )}
+      </div>
+      <div className="w-full flex justify-end mt-4">
         <Button
-          className="w-full mt-4 md:mt-11 bg-green-500 text-white"
           type="submit"
+          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
         >
-          {noteData ? "Update" : "Create"}
+          {noteData ? "Update Note" : "Create Note"}
         </Button>
       </div>
     </form>

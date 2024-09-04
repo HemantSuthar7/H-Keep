@@ -252,6 +252,9 @@ const updateNote = asyncHandler( async (req, res) => {
 
     const {noteId, title, textContent, color, label} = req.body; // remember to receive image later
 
+    console.log("The body data is : ", req.body);
+    console.log("The file data is : ", req.file)
+
 
     if (
         [noteId, title, textContent, color, label].some(field => field !== undefined && typeof field !== "string")
@@ -329,7 +332,7 @@ const updateNote = asyncHandler( async (req, res) => {
     
     let labelCategory;
 
-    if (typeof label === "string") {
+    if (typeof label === "string" && label.trim() !== "") {
         labelCategory = await Label.findById(label);
         if (!labelCategory) {
             throw new ApiError(400, "Invalid label ID");
@@ -344,67 +347,63 @@ const updateNote = asyncHandler( async (req, res) => {
 
     // Handle image
 
+    // Handle image
     const noteImageLocalPath = req.file?.path;
     let updatedNoteImageUrlToSave;
 
-    if(noteImageLocalPath){
+    if (noteImageLocalPath) {
+        try {
+            console.log("we have got the image")
+            // First, upload the new image
+            const noteImage = await uploadOnCloudinary(noteImageLocalPath);
 
-        const noteImage = await uploadOnCloudinary(noteImageLocalPath)
-
-        if(!noteImage.url){
-            throw new ApiError(500, "Error occured while uploading note-image")
-        }
-
-        updatedNoteImageUrlToSave = noteImage.url
-
-        // delete the old image from cloudinary
-
-        // get the old image url
-
-        let oldImageUrl;
-
-        // if there exists a url
-        if(typeof noteToUpdate.imageUrl === "string"){
-            oldImageUrl = noteToUpdate.imageUrl
-
-            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
-            const match = oldImageUrl.match(regex);
-            const public_id = match[1];
-
-            const deleteResponse = await deleteFromCloudinary(public_id, "image")
-
-            if (deleteResponse?.result === "ok") {
-                console.log("old image deleted successfully")
-            } else {
-                throw new ApiError(500, "There was an error while deleting the old note image")
+            if (!noteImage.url) {
+                throw new ApiError(500, "Error occurred while uploading todoList-image");
             }
 
-        }
+            updatedNoteImageUrlToSave = noteImage.url;
 
-    }
+            // Now, delete the old image from Cloudinary
+            if (typeof noteToUpdate.imageUrl === "string") {
+                const oldImageUrl = noteToUpdate.imageUrl;
+                const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+                const match = oldImageUrl.match(regex);
 
+                if (match) {
+                    const public_id = match[1];
+                    const deleteResponse = await deleteFromCloudinary(public_id, "image");
 
-    if(!noteImageLocalPath){
-        updatedNoteImageUrlToSave = null
-
-        let oldImageUrl;
-
-        // if there exists a url
-        if(typeof noteToUpdate.imageUrl === "string"){
-            oldImageUrl = noteToUpdate.imageUrl
-
-            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
-            const match = oldImageUrl.match(regex);
-            const public_id = match[1];
-
-            const deleteResponse = await deleteFromCloudinary(public_id, "image")
-
-            if (deleteResponse?.result === "ok") {
-                console.log("old image deleted successfully")
-            } else {
-                throw new ApiError(500, "There was an error while deleting the old note image")
+                    if (deleteResponse?.result === "ok") {
+                        console.log("Old image deleted successfully");
+                    } else {
+                        throw new ApiError(500, "There was an error while deleting the old todoList image");
+                    }
+                }
             }
 
+        } catch (error) {
+            throw new ApiError(500, "An error occurred during the image upload or deletion process");
+        }
+    } else {
+        console.log("As we did not got the image with data, so we will delete the old one")
+        updatedNoteImageUrlToSave = null;
+
+        // If no new image is uploaded, delete the old one if it exists
+        if (typeof noteToUpdate.imageUrl === "string") {
+            const oldImageUrl = noteToUpdate.imageUrl;
+            const regex = /\/upload\/[^\/]+\/([^\/]+)\./;
+            const match = oldImageUrl.match(regex);
+
+            if (match) {
+                const public_id = match[1];
+                const deleteResponse = await deleteFromCloudinary(public_id, "image");
+
+                if (deleteResponse?.result === "ok") {
+                    console.log("Old image deleted successfully");
+                } else {
+                    throw new ApiError(500, "There was an error while deleting the old todoList image");
+                }
+            }
         }
     }
 
@@ -416,7 +415,7 @@ const updateNote = asyncHandler( async (req, res) => {
                 title : titleToSave,
                 textContent : textContentToSave,
                 color : colorToSave,
-                labelCategory : labelCategory,
+                labelCategory : labelCategory || null,
                 imageUrl : updatedNoteImageUrlToSave, 
             }
         },
