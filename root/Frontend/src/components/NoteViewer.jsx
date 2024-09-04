@@ -32,7 +32,10 @@ const NoteViewer = ({ noteData }) => {
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative">
+    <div 
+    className="max-w-4xl mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative"
+    style={{ backgroundColor: color }}
+    >
       {/* Top bar with Back, Delete, and Edit buttons */}
       <div className="flex justify-between items-center mb-4">
         <button className="mr-2" onClick={handleBackClick}>
@@ -50,18 +53,18 @@ const NoteViewer = ({ noteData }) => {
 
       {/* Optional Image */}
       {imageUrl && (
-        <div className="flex justify-center mb-4">
+        <div className="mb-4 flex justify-center">
           <img
             src={imageUrl}
             alt="Note related"
-            className="w-full h-56 object-cover rounded-md"
+            className="w-9/12 h-auto object-cover rounded-xl mx-auto"
           />
         </div>
       )}
 
       {/* Title */}
       <div className="mb-4">
-        <h2 className="text-3xl font-semibold">{title}</h2>
+        <h2 className="text-4xl font-semibold">{title}</h2>
       </div>
 
       {/* Line between title and content */}
