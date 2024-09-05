@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Input, Select, RTE } from "./index";
 import { createNote, updateNote } from "../methods/noteMethods";
 import { getCurrentUserData } from "../methods/userMethods";
+import { FaArrowLeft } from 'react-icons/fa';
 
 function NoteEditorForm({ noteData }) {
   const { register, handleSubmit, setValue, formState: { errors }, control, getValues, watch } = useForm({
@@ -56,6 +57,10 @@ function NoteEditorForm({ noteData }) {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     setSelectedImage(file);
+  };
+
+  const handleBackClick = () => {
+    navigate("/UserNotesAndLists");
   };
 
   const submit = async (data) => {
@@ -111,6 +116,11 @@ function NoteEditorForm({ noteData }) {
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white">
       <div className="w-full md:w-2/3 px-2">
+      <div className="flex justify-between items-center mb-4 w-full">
+        <button className="mr-2" onClick={handleBackClick}>
+          <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
+        </button>
+      </div>
         <div className="mb-4">
           <Input
             label="Title :"
@@ -134,7 +144,7 @@ function NoteEditorForm({ noteData }) {
         </div>
       </div>
       <div className="w-full md:w-1/3 px-2 mt-4 md:mt-0">
-        <div className="mb-5">
+        <div className="mb-5 mt-10">
           <Input
             label="Choose File"
             labelClassName="text-gray-300"

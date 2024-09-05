@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createLabel, updateLabel, deleteLabel } from "../methods/labelMethods.js";
 import { getCurrentUserData } from "../methods/userMethods.js";
-import { FaHome, FaSave, FaTrashAlt, FaPlus, FaEdit } from 'react-icons/fa';
+import {  FaSave, FaTrashAlt, FaPlus, FaEdit, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const LabelEditor = () => {
@@ -44,6 +44,11 @@ const LabelEditor = () => {
     refreshLabels();
   };
 
+  const handleLinkClick = (labelId, labelName, e) => {
+    e.stopPropagation(); // Prevent event propagation to the parent div
+    navigate("/LabelDataViewer", { state: { labelId, labelName } });
+  };
+
   const refreshLabels = async () => {
     const userData = await getCurrentUserData();
     if (userData && userData.data && userData.data.labels) {
@@ -52,11 +57,16 @@ const LabelEditor = () => {
   };
 
   return (
-    <div className="bg-gray-800 text-white p-4 rounded-lg w-96 shadow-lg mx-8 my-8">
-      <div className="flex items-center mb-4">
-        <FaHome className="cursor-pointer text-xl hover:text-gray-400" onClick={handleHomeClick} />
-        <h2 className="text-lg ml-2">Edit Labels</h2>
+    <div className="bg-[#232427] text-white p-4 rounded-lg w-[400px] shadow-lg mx-auto my-8"> {/* Updated background color */}
+      <div className="relative mb-2"> {/* Use relative positioning to adjust child elements */}
+        <FaArrowLeft
+          className="absolute left-0 top-0 cursor-pointer text-2xl hover:text-gray-400"
+          onClick={handleHomeClick}
+        />
+        <h2 className="text-xl text-center font-medium">Edit Labels</h2> {/* Center the text */}
       </div>
+
+      <hr className="border-gray-400 mb-3" />
 
       {newLabelMode ? (
         <div className="flex items-center mb-2">
@@ -64,7 +74,7 @@ const LabelEditor = () => {
             type="text"
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
-            className="flex-grow p-2 bg-gray-700 border-none rounded"
+            className="flex-grow p-2 bg-[#2d2e30] border-none rounded" 
             placeholder="Enter label name"
           />
           <FaSave
@@ -75,7 +85,7 @@ const LabelEditor = () => {
       ) : (
         <button
           onClick={() => setNewLabelMode(true)}
-          className="w-full p-2 bg-gray-700 rounded hover:bg-gray-600 mb-4 flex items-center justify-center"
+          className="w-full p-2 bg-[#2d2e30] rounded hover:bg-gray-600 mb-4 flex items-center justify-center"
         >
           <FaPlus className="mr-2" /> Create new label
         </button>
@@ -91,7 +101,7 @@ const LabelEditor = () => {
                 onChange={(e) =>
                   setEditingLabel({ ...editingLabel, labelName: e.target.value })
                 }
-                className="flex-grow p-2 bg-gray-700 border-none rounded"
+                className="flex-grow p-2 bg-[#2d2e30] border-none rounded" 
               />
               <FaSave
                 onClick={() => handleSave(label._id, editingLabel.labelName)}
@@ -105,11 +115,17 @@ const LabelEditor = () => {
           ) : (
             <div
               key={label._id}
-              className="flex items-center justify-between mb-2 p-2 bg-gray-700 rounded hover:bg-gray-600 cursor-pointer"
+              className="flex items-center justify-between mb-2 p-2 bg-[#2d2e30] rounded hover:bg-zinc-600 cursor-pointer"
               onClick={() => setEditingLabel({ ...label })}
             >
               <span>{label.labelName}</span>
-              <FaEdit className="ml-2 text-gray-400 hover:text-white" />
+              <div className="flex items-center">
+                <FaExternalLinkAlt
+                  onClick={(e) => handleLinkClick(label._id, label.labelName, e)}
+                  className="mr-2 text-blue-400 hover:text-blue-500 cursor-pointer"
+                />
+                <FaEdit className="text-gray-400 hover:text-white cursor-pointer" />
+              </div>
             </div>
           )
         )}
@@ -118,7 +134,7 @@ const LabelEditor = () => {
       <div className="mt-4 flex justify-end">
         <button
           onClick={() => setNewLabelMode(false)}
-          className="p-2 bg-gray-600 rounded hover:bg-gray-500"
+          className="p-2 bg-[#2d2e30] rounded hover:bg-zinc-600"
         >
           Done
         </button>

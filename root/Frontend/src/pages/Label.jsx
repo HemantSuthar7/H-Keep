@@ -1,10 +1,12 @@
 import React from 'react'
-import {LabelEditor} from "../components/index"
+import {LabelEditor, Container} from "../components/index"
 
 function Label() {
   return (
     <div>
-      <LabelEditor/>
+      <Container>
+        <LabelEditor/>
+      </Container>
     </div>
   )
 }

@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { createList, updateList } from '../methods/todoListMethods';
 import { Select } from "../components/index.js";
 import { getCurrentUserData } from "../methods/userMethods.js";
+import { FaArrowLeft } from 'react-icons/fa';
+
 
 const ListEditorForm = ({ listData }) => {
   const {
@@ -122,11 +124,22 @@ const ListEditorForm = ({ listData }) => {
     }
   };
 
+  const handleBackClick = () => {
+    navigate("/UserNotesAndLists");
+  };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white"
     >
+
+      <div className="flex justify-between items-center mb-4 w-full">
+        <button className="mr-2" onClick={handleBackClick}>
+          <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
+        </button>
+      </div>
+      
       {/* Title Field */}
       <div className="mb-4">
         <label htmlFor="title" className="block text-gray-300 font-medium mb-2">

@@ -1,8 +1,8 @@
 import React from 'react';
-import { FaEdit, FaArrowLeft, FaTrash } from 'react-icons/fa'; // Import FaTrash for delete icon
+import { FaEdit, FaArrowLeft, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import parse from "html-react-parser";
-import {deleteNote} from "../methods/noteMethods.js"
+import { deleteNote } from "../methods/noteMethods.js";
 
 const NoteViewer = ({ noteData }) => {
   const { title, textContent, label, imageUrl, color, id } = noteData || {};
@@ -12,6 +12,7 @@ const NoteViewer = ({ noteData }) => {
     ? parse(noteData.textContent, {
         replace: (domNode) => {
           if (domNode.name === 'img') {
+            // Apply class for centering and rounding images
             domNode.attribs.class = (domNode.attribs.class || '') + ' center-image';
           }
         },
@@ -33,9 +34,19 @@ const NoteViewer = ({ noteData }) => {
 
   return (
     <div 
-    className="max-w-4xl mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative"
-    style={{ backgroundColor: color }}
+      className="max-w-4xl mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative"
+      style={{ backgroundColor: color }}
     >
+      <style dangerouslySetInnerHTML={{ __html: `
+        .center-image {
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+          max-width: 100%;
+          border-radius: 10px; /* Round the images */
+        }
+      ` }} />
+
       {/* Top bar with Back, Delete, and Edit buttons */}
       <div className="flex justify-between items-center mb-4">
         <button className="mr-2" onClick={handleBackClick}>
