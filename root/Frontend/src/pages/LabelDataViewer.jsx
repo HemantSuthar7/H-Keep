@@ -1,41 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { Container, NoteCard, ListCard } from "../components/index.js";
-import { getCurrentUserData } from "../methods/userMethods.js";
+import { getLabelData } from "../methods/labelMethods.js";
+import { useLocation } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-function UserNotesAndLists() {
+
+function LabelDataViewer() {
+
+    const location = useLocation();
+    const {labelId, labelName} = location.state || {};
+    const navigate = useNavigate();
+
   const [sortedItems, setSortedItems] = useState([]);
-  const [labelMap, setLabelMap] = useState({});
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchLabelData = async () => {
       try {
-        const userData = await getCurrentUserData();
+        const labelData = await getLabelData(labelId);
 
-        if (userData && userData.data) {
-          // Create a mapping of label IDs to label names
-          const labelMapping = userData.data.labels.reduce((acc, label) => {
-            acc[label._id] = label.labelName;
-            return acc;
-          }, {});
-
-          setLabelMap(labelMapping);
-
+        if (labelData && labelData.data) {
           // Combine and sort notes and todoLists by date, latest first
           const combinedItems = [
-            ...userData.data.notes.map(note => ({
+            ...labelData.data.notes.map(note => ({
               ...note,
               type: 'note',
               label: {
-                name: labelMapping[note.labelCategory] || note.labelCategory,
-                id: note.labelCategory
+                name: labelData.data.labelName,
+                id: labelId
               }
             })),
-            ...userData.data.todoLists.map(list => ({
+            ...labelData.data.todoLists.map(list => ({
               ...list,
               type: 'list',
               label: {
-                name: labelMapping[list.labelCategory] || list.labelCategory,
-                id: list.labelCategory
+                name: labelData.data.labelName,
+                id: labelId
               }
             })),
           ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
@@ -43,16 +43,33 @@ function UserNotesAndLists() {
           setSortedItems(combinedItems);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching label data:", error);
       }
     };
 
-    fetchUserData();
-  }, []);
+    fetchLabelData();
+  }, [labelId]);
+
+  const handleBackClick = () => {
+    navigate("/UserNotesAndLists");
+  };
+
 
   return (
     <Container>
       <div className="p-4 sm:p-6 lg:p-8">
+      <div className="relative flex items-center mb-4 text-xl bg-zinc-700 text-white w-full h-10 rounded-xl">
+        {/* Left-aligned button */}
+        <button className="absolute left-0 ml-2" onClick={handleBackClick}>
+            <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
+        </button>
+
+        {/* Centered text */}
+        <div className="mx-auto text-center">
+            {labelName}<span> Data</span>
+        </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {sortedItems.map(item => (
             item.type === 'note' ? (
@@ -61,8 +78,7 @@ function UserNotesAndLists() {
                 id={item._id}
                 title={item.title}
                 textContent={item.textContent}
-                label={item.label.name || ''}
-                labelId={item.label.id || ''}
+                label={labelName}
                 imageUrl={item.imageUrl}
                 color={item.color}
               />
@@ -72,7 +88,7 @@ function UserNotesAndLists() {
                 _id={item._id}
                 title={item.title}
                 todoItems={item.todoItems}
-                labelName={item.label.name || ''}
+                labelName={labelName}
                 labelId={item.label.id || ''}
                 imageUrl={item.imageUrl}
                 color={item.color}
@@ -85,4 +101,4 @@ function UserNotesAndLists() {
   );
 }
 
-export default UserNotesAndLists;
+export default LabelDataViewer;

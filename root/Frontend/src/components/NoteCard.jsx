@@ -4,9 +4,9 @@ import parse from 'html-react-parser';
 import {deleteNote} from "../methods/noteMethods.js"
 
 
-const NoteCard = ({ title, textContent, label, imageUrl, color, id }) => {
+const NoteCard = ({ title, textContent, label, labelId, imageUrl, color, id }) => {
   const navigate = useNavigate();
-  const noteData = { title, textContent, label, imageUrl, color, id };
+  const noteData = { title, textContent, label, labelId, imageUrl, color, id };
 
   // Function to filter out images from the parsed HTML content
   const removeImages = (domNode) => {
@@ -22,6 +22,11 @@ const NoteCard = ({ title, textContent, label, imageUrl, color, id }) => {
   const handleEditClick = (e) => {
     e.stopPropagation(); // Prevent event propagation to the parent div
     navigate("/EditNote", { state: { noteData } });
+  };
+
+  const handleLabelClick = (e) => {
+    e.stopPropagation(); // Prevent event propagation to the parent div
+    navigate("/LabelDataViewer", { state: { labelId, labelName : label } });
   };
 
   const handleDeleteClick = async () => {
@@ -50,7 +55,7 @@ const NoteCard = ({ title, textContent, label, imageUrl, color, id }) => {
       <div className="flex justify-between items-center mt-4">
         <span 
           className="bg-white rounded-full px-3 py-1 text-sm text-black hover:bg-gray-500 font-medium"
-          onClick={(e) => e.stopPropagation()} // Prevent event propagation to the parent div
+          onClick={handleLabelClick} // Prevent event propagation to the parent div
         >
           {label}
         </span>

@@ -17,7 +17,7 @@ import Login from "./pages/Login.jsx"
 import Signup from './pages/Signup.jsx'
 import UserNotesAndLists from "./pages/UserNotesAndLists.jsx"
 import Label from './pages/Label.jsx'
-
+import LabelDataViewer from './pages/LabelDataViewer.jsx'
 
 
 const router = createBrowserRouter([
@@ -106,6 +106,14 @@ const router = createBrowserRouter([
         element :( 
         <Protected authentication>
           <Label/>
+        </Protected>
+        )
+      },
+      {
+        path : "/LabelDataViewer",
+        element :( 
+        <Protected authentication>
+          <LabelDataViewer/>
         </Protected>
         )
       },

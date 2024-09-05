@@ -90,6 +90,8 @@ const getLabelData = asyncHandler( async (req, res) => {
 
     const { labelId } = req.params;
 
+    console.log("The labelId received at backend is : ", labelId)
+
     const userId = req.user._id;
 
 

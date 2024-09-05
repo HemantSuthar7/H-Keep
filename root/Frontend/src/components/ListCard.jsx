@@ -24,6 +24,11 @@ const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labe
     navigate("/List", { state: { listData } });
   };
 
+  const handleLabelClick = (e) => {
+    e.stopPropagation(); // Prevent event propagation to the parent div
+    navigate("/LabelDataViewer", { state: { labelId, labelName } });
+  };
+
   return (
     <div 
       className="w-[300px] h-[450px] p-4 rounded-lg shadow-lg text-white flex flex-col mx-3 my-3"
@@ -60,7 +65,7 @@ const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labe
       <div className="flex justify-between items-center mt-4">
         <span 
           className="bg-white rounded-full px-3 py-1 text-sm text-black hover:bg-gray-500 font-medium"
-          onClick={(e) => e.stopPropagation()} // Prevent click propagation for labelName
+          onClick={handleLabelClick} // Prevent click propagation for labelName
         >
           {labelName}
         </span>
