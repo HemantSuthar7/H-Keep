@@ -204,7 +204,7 @@ const ListEditorForm = ({ listData }) => {
       {/* Label Selection */}
       <div className="mb-4">
         <Select
-          label="Label (optional):"
+          label="Label :"
           options={labels.map(label => label.labelName)}
           className="bg-gray-700 text-white"
           {...register('label')}

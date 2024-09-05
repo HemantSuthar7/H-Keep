@@ -63,12 +63,18 @@ const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labe
         </ul>
       </div>
       <div className="flex justify-between items-center mt-4">
-        <span 
-          className="bg-white rounded-full px-3 py-1 text-sm text-black hover:bg-gray-500 font-medium"
-          onClick={handleLabelClick} // Prevent click propagation for labelName
-        >
-          {labelName}
-        </span>
+      <span
+        className="bg-white rounded-full px-3 py-1 text-sm text-black hover:bg-gray-500 font-medium flex items-center gap-2 cursor-pointer"
+        onClick={handleLabelClick} // Prevent event propagation to the parent div
+      >
+        {/* Label SVG Icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
+          <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h440q19 0 36 8.5t28 23.5l216 288-216 288q-11 15-28 23.5t-36 8.5H160Zm0-80h440l180-240-180-240H160v480Zm220-240Z"/>
+        </svg>
+
+        {/* Label Text */}
+        {labelName}
+      </span>
         <div className="flex gap-2">
           <button 
             className="bg-white text-black rounded-full w-8 h-8 flex items-center justify-center hover:bg-zinc-400"
