@@ -39,16 +39,16 @@ function Signup() {
 
   return (
     <div className="flex items-center justify-center mx-4 sm:mx-8 lg:mx-16">
-      <div className="w-full max-w-md bg-gray-100 rounded-xl p-6 border border-gray-300 sm:p-8 lg:p-10">
+      <div className="w-full max-w-md bg-neutral-800 rounded-xl p-6 border border-gray-600 sm:p-8 lg:p-10">
         <div className="mb-4 flex justify-center">
           <span className="inline-block w-24">
             <Logo width="100%" />
           </span>
         </div>
-        <h2 className="text-center text-black text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
+        <h2 className="text-center text-white text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
           Sign up to create an account
         </h2>
-        <p className="mt-2 text-center text-sm sm:text-base text-black/60 mb-5">
+        <p className="mt-2 text-center text-sm sm:text-base text-white/60 mb-5">
           Already have an account?&nbsp;
           <Link
             to="/login"
@@ -66,7 +66,7 @@ function Signup() {
             <div>
               <Input
                 label="Full Name : "
-                labelClassName="text-black"
+                labelClassName="text-white"
                 placeholder="Enter your full name"
                 className={errors.name || fieldErrors.name ? 'border-red-500 text-red-500' : ''}
                 {...register("fullName", { required: "Full Name is required" })}
@@ -77,7 +77,7 @@ function Signup() {
             <div>
               <Input
                 label="Username : "
-                labelClassName="text-black"
+                labelClassName="text-white"
                 placeholder="Choose a username"
                 className={errors.username || fieldErrors.username ? 'border-red-500 text-red-500' : ''}
                 {...register("username", { required: "Username is required" })}
@@ -88,7 +88,7 @@ function Signup() {
             <div>
               <Input
                 label="Email : "
-                labelClassName="text-black"
+                labelClassName="text-white"
                 placeholder="Enter your email"
                 type="email"
                 className={errors.email || fieldErrors.email ? 'border-red-500 text-red-500' : ''}
@@ -106,7 +106,7 @@ function Signup() {
             <div>
               <Input
                 label="Password : "
-                labelClassName="text-black"
+                labelClassName="text-white"
                 placeholder="Enter your password"
                 type="password"
                 className={errors.password || fieldErrors.password ? 'border-red-500 text-red-500' : ''}

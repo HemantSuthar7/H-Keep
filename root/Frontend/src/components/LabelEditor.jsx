@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createLabel, updateLabel, deleteLabel } from "../methods/labelMethods.js";
 import { getCurrentUserData } from "../methods/userMethods.js";
-import {  FaSave, FaTrashAlt, FaPlus, FaEdit, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
+import { FaSave, FaTrashAlt, FaPlus, FaEdit, FaExternalLinkAlt, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const LabelEditor = () => {
@@ -57,13 +57,14 @@ const LabelEditor = () => {
   };
 
   return (
-    <div className="bg-[#232427] text-white p-4 rounded-lg w-[400px] shadow-lg mx-auto my-8"> {/* Updated background color */}
+    <div className='p-4'>
+      <div className="bg-[#232427] text-white p-4 sm:p-6 lg:p-8 rounded-lg w-full max-w-md sm:max-w-lg lg:max-w-xl shadow-lg mx-auto my-8"> {/* Responsive width */}
       <div className="relative mb-2"> {/* Use relative positioning to adjust child elements */}
         <FaArrowLeft
-          className="absolute left-0 top-0 cursor-pointer text-2xl hover:text-gray-400"
+          className="absolute left-0 top-0 cursor-pointer text-xl sm:text-2xl hover:text-gray-400"
           onClick={handleHomeClick}
         />
-        <h2 className="text-xl text-center font-medium">Edit Labels</h2> {/* Center the text */}
+        <h2 className="text-lg sm:text-xl lg:text-2xl text-center font-medium">Edit Labels</h2> {/* Responsive text size */}
       </div>
 
       <hr className="border-gray-400 mb-3" />
@@ -139,6 +140,7 @@ const LabelEditor = () => {
           Done
         </button>
       </div>
+    </div>
     </div>
   );
 };

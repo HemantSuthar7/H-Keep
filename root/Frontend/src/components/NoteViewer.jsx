@@ -33,57 +33,59 @@ const NoteViewer = ({ noteData }) => {
   };
 
   return (
-    <div 
-      className="max-w-4xl mx-auto bg-gray-900 text-white shadow-lg rounded-lg p-6 relative"
-      style={{ backgroundColor: color }}
-    >
-      <style dangerouslySetInnerHTML={{ __html: `
-        .center-image {
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          max-width: 100%;
-          border-radius: 10px; /* Round the images */
-        }
-      ` }} />
+    <div className="p-4"> {/* Added margin via padding */}
+      <div
+        className="max-w-4xl mx-auto text-white shadow-lg rounded-lg p-6 relative"
+        style={{ backgroundColor: color }}
+      >
+        <style dangerouslySetInnerHTML={{ __html: `
+          .center-image {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+            border-radius: 10px; /* Round the images */
+          }
+        ` }} />
 
-      {/* Top bar with Back, Delete, and Edit buttons */}
-      <div className="flex justify-between items-center mb-4">
-        <button className="mr-2" onClick={handleBackClick}>
-          <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
-        </button>
-        <div className="flex gap-4 ml-auto">
-          <button onClick={handleDeleteClick}>
-            <FaTrash className="text-white hover:text-red-600 text-2xl" />
+        {/* Top bar with Back, Delete, and Edit buttons */}
+        <div className="flex justify-between items-center mb-4">
+          <button className="mr-2" onClick={handleBackClick}>
+            <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
           </button>
-          <button onClick={handleEditClick}>
-            <FaEdit className="text-white hover:text-green-500 text-2xl" />
-          </button>
+          <div className="flex gap-4 ml-auto">
+            <button onClick={handleDeleteClick}>
+              <FaTrash className="text-white hover:text-red-600 text-2xl" />
+            </button>
+            <button onClick={handleEditClick}>
+              <FaEdit className="text-white hover:text-green-500 text-2xl" />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Optional Image */}
-      {imageUrl && (
-        <div className="mb-4 flex justify-center">
-          <img
-            src={imageUrl}
-            alt="Note related"
-            className="w-9/12 h-auto object-cover rounded-xl mx-auto"
-          />
+        {/* Optional Image */}
+        {imageUrl && (
+          <div className="mb-4 flex justify-center">
+            <img
+              src={imageUrl}
+              alt="Note related"
+              className="w-9/12 h-auto object-cover rounded-xl mx-auto"
+            />
+          </div>
+        )}
+
+        {/* Title */}
+        <div className="mb-4">
+          <h2 className="text-4xl font-semibold">{title}</h2>
         </div>
-      )}
 
-      {/* Title */}
-      <div className="mb-4">
-        <h2 className="text-4xl font-semibold">{title}</h2>
-      </div>
+        {/* Line between title and content */}
+        <hr className="border-gray-400 mb-2" />
 
-      {/* Line between title and content */}
-      <hr className="border-gray-400 mb-2" />
-
-      {/* Content */}
-      <div className="text-lg leading-relaxed">
-        {contentWithCenteredImages}
+        {/* Content */}
+        <div className="text-lg leading-relaxed">
+          {contentWithCenteredImages}
+        </div>
       </div>
     </div>
   );

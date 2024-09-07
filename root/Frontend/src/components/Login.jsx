@@ -45,16 +45,16 @@ function Login() {
 
   return (
     <div className='flex items-center justify-center px-4 sm:px-8 lg:px-16'>
-      <div className={`w-full max-w-md bg-gray-100 rounded-xl p-6 sm:p-8 lg:p-10 border border-gray-300`}>
+      <div className={`w-full max-w-md bg-neutral-800 rounded-xl p-6 sm:p-8 lg:p-10 border border-gray-600`}>
         <div className='mb-4 flex justify-center'>
           <span className="inline-block w-24">
             <Logo width='100%' />
           </span>
         </div>
-        <h2 className="text-center text-black text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
+        <h2 className="text-center text-white text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
           Log in to your account
         </h2>
-        <p className="mt-2 text-center text-sm sm:text-base text-black/60 mb-6">
+        <p className="mt-2 text-center text-sm sm:text-base text-white/60 mb-6">
           Don&apos;t have any account?&nbsp;
           <Link
             to="/signup"
@@ -72,7 +72,7 @@ function Login() {
             {/* Email input */}
             <Input
               label="Email : "
-              labelClassName="text-black"
+              labelClassName="text-white"
               type="email"
               placeholder='Enter your email'
               {...register("email", {
@@ -88,7 +88,7 @@ function Login() {
             {/* Password input */}
             <Input
               label="Password : "
-              labelClassName="text-black"
+              labelClassName="text-white"
               type="password"
               placeholder='Enter your password'
               {...register("password", {

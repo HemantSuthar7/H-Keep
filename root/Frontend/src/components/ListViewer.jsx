@@ -76,7 +76,8 @@ const ListViewer = ({ listData }) => {
   };
 
   return (
-    <div 
+    <div className='p-4'>
+      <div 
     className="max-w-4xl mx-auto text-white shadow-lg rounded-lg p-6 relative"
     style={{ backgroundColor: color }}
     >
@@ -141,6 +142,7 @@ const ListViewer = ({ listData }) => {
           </li>
         ))}
       </ul>
+    </div>
     </div>
   );
 };

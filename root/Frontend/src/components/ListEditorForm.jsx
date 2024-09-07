@@ -129,124 +129,127 @@ const ListEditorForm = ({ listData }) => {
   };
 
   return (
+  <div className='p-4'>
     <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white"
-    >
+  onSubmit={handleSubmit(onSubmit)}
+  className="p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white sm:p-4 md:p-6"
+>
 
-      <div className="flex justify-between items-center mb-4 w-full">
-        <button className="mr-2" onClick={handleBackClick}>
-          <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
-        </button>
+  <div className="flex justify-between items-center mb-4 w-full">
+    <button className="mr-2" onClick={handleBackClick}>
+      <FaArrowLeft className="text-white hover:text-gray-400 text-xl md:text-2xl" />
+    </button>
+  </div>
+  
+  {/* Title Field */}
+  <div className="mb-4">
+    <label htmlFor="title" className="block text-gray-300 font-medium mb-2">
+      Title:
+    </label>
+    <input
+      id="title"
+      type="text"
+      placeholder="Enter list title"
+      {...register('title', { required: 'Title is required' })}
+      className={`w-full p-2 border ${errors.title ? 'border-red-500' : 'border-gray-600'} rounded-md bg-gray-700 text-white`}
+    />
+    {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+  </div>
+
+  {/* Image Upload */}
+  <div className="mb-4">
+    <label htmlFor="image" className="block text-gray-300 font-medium mb-2">
+      Image (optional):
+    </label>
+    <input
+      id="image"
+      type="file"
+      accept="image/*"
+      {...register('image')}
+      className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white"
+    />
+    {imagePreview && (
+      <div className="mt-4">
+        <img
+          src={imagePreview}
+          alt="Preview"
+          className="max-h-40 md:max-h-60 rounded-md object-cover"
+        />
       </div>
-      
-      {/* Title Field */}
-      <div className="mb-4">
-        <label htmlFor="title" className="block text-gray-300 font-medium mb-2">
-          Title:
-        </label>
+    )}
+  </div>
+
+  {/* Todo Items */}
+  <div className="mb-6">
+    <label className="block text-gray-300 font-medium mb-2">Todo Items:</label>
+    {fields.map((item, index) => (
+      <div key={item.id} className="flex items-center mb-2 space-x-2">
         <input
-          id="title"
           type="text"
-          placeholder="Enter list title"
-          {...register('title', { required: 'Title is required' })}
-          className={`w-full p-2 border ${errors.title ? 'border-red-500' : 'border-gray-600'} rounded-md bg-gray-700 text-white`}
+          placeholder="Enter todo item"
+          {...register(`todoItems.${index}.value`, {
+            required: 'Todo item is required',
+            maxLength: {
+              value: 200,
+              message: 'Maximum length is 200 characters',
+            },
+          })}
+          className={`flex-grow p-2 border ${errors.todoItems?.[index]?.value ? 'border-red-500' : 'border-gray-600'} rounded-md bg-gray-700 text-white`}
         />
-        {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
-      </div>
-
-      {/* Image Upload */}
-      <div className="mb-4">
-        <label htmlFor="image" className="block text-gray-300 font-medium mb-2">
-          Image (optional):
-        </label>
-        <input
-          id="image"
-          type="file"
-          accept="image/*"
-          {...register('image')}
-          className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white"
-        />
-        {imagePreview && (
-          <div className="mt-4">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="max-h-60 rounded-md"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Todo Items */}
-      <div className="mb-6">
-        <label className="block text-gray-300 font-medium mb-2">Todo Items:</label>
-        {fields.map((item, index) => (
-          <div key={item.id} className="flex items-center mb-2 space-x-2">
-            <input
-              type="text"
-              placeholder="Enter todo item"
-              {...register(`todoItems.${index}.value`, {
-                required: 'Todo item is required',
-                maxLength: {
-                  value: 200,
-                  message: 'Maximum length is 200 characters',
-                },
-              })}
-              className={`flex-grow p-2 border ${errors.todoItems?.[index]?.value ? 'border-red-500' : 'border-gray-600'} rounded-md bg-gray-700 text-white`}
-            />
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-        {errors.todoItems && <p className="text-red-500 text-sm mt-1">{errors.todoItems.message}</p>}
         <button
           type="button"
-          onClick={() => append({ value: '', status: false })}
-          className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+          onClick={() => remove(index)}
+          className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
         >
-          Add Todo Item
+          Delete
         </button>
       </div>
+    ))}
+    {errors.todoItems && <p className="text-red-500 text-sm mt-1">{errors.todoItems.message}</p>}
+    <button
+      type="button"
+      onClick={() => append({ value: '', status: false })}
+      className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+    >
+      Add Todo Item
+    </button>
+  </div>
 
-      {/* Label Selection */}
-      <div className="mb-4">
-        <Select
-          label="Label :"
-          options={labels.map(label => label.labelName)}
-          className="bg-gray-700 text-white"
-          {...register('label')}
-        />
-      </div>
+  {/* Label Selection */}
+  <div className="mb-4">
+    <Select
+      label="Label :"
+      options={labels.map(label => label.labelName)}
+      className="bg-gray-700 text-white"
+      {...register('label')}
+    />
+  </div>
 
-      {/* Color Selection */}
-      <div className="mb-4">
-        <Select
-          label="Color:"
-          options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
-                    "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
-                    "#4B443A", "#232427"]} // Color options provided
-          value={watchColor}  // Bind the value to the color field
-          {...register('color')}  // Register the color field with React Hook Form
-        />
-      </div>
+  {/* Color Selection */}
+  <div className="mb-4">
+    <Select
+      label="Color:"
+      options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+                "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+                "#4B443A", "#232427"]} 
+      value={watchColor}
+      {...register('color')}
+    />
+  </div>
 
-      {/* Submit Button */}
-      <div className="text-right">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-          disabled={isSubmitting}
-        >
-          {listData ? 'Update' : 'Create'}
-        </button>
-      </div>
-    </form>
+  {/* Submit Button */}
+  <div className="text-center">
+    <button
+      type="submit"
+      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition w-full sm:w-auto"
+      disabled={isSubmitting}
+    >
+      {listData ? 'Update' : 'Create'}
+    </button>
+  </div>
+  </form>
+  </div>
+
   );
 };
 

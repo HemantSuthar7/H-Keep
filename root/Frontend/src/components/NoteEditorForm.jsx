@@ -186,7 +186,7 @@ function NoteEditorForm({ noteData }) {
           {errors.color && <p className="text-red-500">{errors.color.message}</p>}
         </div>
       </div>
-      <div className="w-full flex justify-end mt-4">
+      <div className="w-full flex justify-center mt-4">
         <Button
           type="submit"
           className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
