@@ -132,7 +132,7 @@ const ListEditorForm = ({ listData }) => {
   <div className='p-4'>
     <form
   onSubmit={handleSubmit(onSubmit)}
-  className="p-6 bg-gray-800 shadow-md rounded-lg max-w-3xl mx-auto text-white sm:p-4 md:p-6"
+  className="p-6 bg-[#232427] shadow-xl shadow-black rounded-lg max-w-3xl mx-auto text-white sm:p-4 md:p-6"
 >
 
   <div className="flex justify-between items-center mb-4 w-full">

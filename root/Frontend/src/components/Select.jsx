@@ -18,7 +18,7 @@ function Select({
         {...props} 
         id={id} 
         ref={ref} 
-        className={`px-3 py-2 rounded-lg bg-white text-black outline-none focus:bg-gray-50 duration-200 border border-gray-200 w-full ${classname}`}
+        className={`px-3 py-2 rounded-lg bg-neutral-800 text-white outline-none focus:neutral-800 duration-200 border border-gray-200 w-full ${classname}`}
       >
         { options?.map((option) => (
           <option key={option} value={option}>

@@ -58,10 +58,10 @@ function LabelDataViewer() {
   return (
     <Container>
       <div className="p-4 sm:p-6 lg:p-8">
-      <div className="relative flex items-center mb-4 text-xl bg-zinc-700 text-white w-full h-10 rounded-xl">
+      <div className="relative flex items-center mb-4 text-xl bg-[#E1DABF] text-black w-full font-semibold h-10 rounded-md shadow-lg shadow-black border border-black">
         {/* Left-aligned button */}
         <button className="absolute left-0 ml-2" onClick={handleBackClick}>
-            <FaArrowLeft className="text-white hover:text-gray-400 text-2xl" />
+            <FaArrowLeft className="text-black hover:text-gray-400 text-2xl" />
         </button>
 
         {/* Centered text */}

@@ -58,7 +58,7 @@ const LabelEditor = () => {
 
   return (
     <div className='p-4'>
-      <div className="bg-[#232427] text-white p-4 sm:p-6 lg:p-8 rounded-lg w-full max-w-md sm:max-w-lg lg:max-w-xl shadow-lg mx-auto my-8"> {/* Responsive width */}
+      <div className="bg-[#232427] text-white p-4 sm:p-6 lg:p-8 rounded-lg w-full max-w-md sm:max-w-lg lg:max-w-xl shadow-xl shadow-black mx-auto my-8"> {/* Responsive width */}
       <div className="relative mb-2"> {/* Use relative positioning to adjust child elements */}
         <FaArrowLeft
           className="absolute left-0 top-0 cursor-pointer text-xl sm:text-2xl hover:text-gray-400"

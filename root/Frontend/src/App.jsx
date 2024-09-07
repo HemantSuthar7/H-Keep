@@ -44,10 +44,10 @@ function App() {
   
 
   return !loading ? (
-    <div className="min-h-screen flex flex-col bg-[#E1DABF] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-neutral-900 scrollbar-track-neutral-600 h-32 overflow-y-scroll">
+    <div className="z-40 min-h-screen flex flex-col bg-[#E1DABF] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-[#898369] scrollbar-track-[#E1DABF]  h-32 overflow-y-scroll">
       <div className='w-full block text-white'>
         <Header/>
-        <main className="flex-grow">
+        <main className="flex-grow mt-20 z-0">
         <Outlet />
         </main>
         <Footer/>
