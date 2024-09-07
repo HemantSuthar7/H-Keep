@@ -5,10 +5,12 @@ import Footer from "./components/Footer/Footer.jsx"
 import { useDispatch } from 'react-redux'
 import {login, logout} from "./store/authSlice"
 import {getCurrentUser} from "./methods/userMethods.js"
+import { useNavigate } from 'react-router-dom'
 
 function App() {
   const [loading, setLoading] = useState(true) 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
@@ -23,12 +25,15 @@ function App() {
         const userData = await getCurrentUser();
         if (userData) {
           dispatch(login(userData));
+          navigate("/UserNotesAndLists")
         } else {
           dispatch(logout());
+          navigate("/login")
         }
       } else {
         // No token exists, treat the user as logged out
         dispatch(logout());
+        navigate("/login")
       }
 
       setLoading(false);
@@ -39,7 +44,7 @@ function App() {
   
 
   return !loading ? (
-    <div className="min-h-screen flex flex-col bg-[#262626] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-neutral-900 scrollbar-track-neutral-600 h-32 overflow-y-scroll">
+    <div className="min-h-screen flex flex-col bg-[#E1DABF] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-neutral-900 scrollbar-track-neutral-600 h-32 overflow-y-scroll">
       <div className='w-full block text-white'>
         <Header/>
         <main className="flex-grow">

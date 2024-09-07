@@ -31,7 +31,7 @@ const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labe
 
   return (
     <div 
-      className="w-[300px] h-[450px] p-4 rounded-lg shadow-lg text-white flex flex-col mx-3 my-3 sm:w-[250px] sm:h-[400px] md:w-[280px] md:h-[420px] transition-all duration-300" 
+      className="w-[300px] h-[450px] p-4 rounded-lg shadow-xl text-white flex flex-col mx-3 my-3 sm:w-[250px] sm:h-[400px] md:w-[280px] md:h-[420px] transition-all duration-300 shadow-black" 
       onClick={handleClick}
       style={{ backgroundColor: color }}
     >

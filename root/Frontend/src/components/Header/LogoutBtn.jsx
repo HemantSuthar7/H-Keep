@@ -13,7 +13,7 @@ function LogoutBtn() {
         try {
           await logoutUser()
           dispatch(logout());
-          navigate("/home")
+          navigate("/login")
         } catch (error) {
           console.log("Error in logout", error)
         }
@@ -22,7 +22,7 @@ function LogoutBtn() {
 
   return (
     <button
-    className='inline-bock px-6 py-2 duration-200 hover:bg-red-600 rounded-full'
+    className='inline-bock px-6 py-2 text-black duration-200 hover:bg-red-600   rounded-xl shadow-md shadow-black'
     onClick={logoutHandler}
     >Logout</button>
   )
