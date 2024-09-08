@@ -35,7 +35,7 @@ const NoteViewer = ({ noteData }) => {
   return (
     <div className="p-4"> {/* Added margin via padding */}
       <div
-        className="max-w-4xl mx-auto text-white shadow-lg rounded-lg p-6 relative"
+        className="max-w-4xl mx-auto text-white shadow-2xl shadow-black rounded-lg p-6 relative"
         style={{ backgroundColor: color }}
       >
         <style dangerouslySetInnerHTML={{ __html: `
@@ -69,7 +69,7 @@ const NoteViewer = ({ noteData }) => {
             <img
               src={imageUrl}
               alt="Note related"
-              className="w-9/12 h-auto object-cover rounded-xl mx-auto"
+              className="w-9/12 h-auto object-cover rounded-xl mx-auto shadow-lg shadow-black"
             />
           </div>
         )}

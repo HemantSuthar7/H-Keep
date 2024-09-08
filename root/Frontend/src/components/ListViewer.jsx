@@ -78,7 +78,7 @@ const ListViewer = ({ listData }) => {
   return (
     <div className='p-4'>
       <div 
-    className="max-w-4xl mx-auto text-white shadow-lg rounded-lg p-6 relative"
+    className="max-w-4xl mx-auto text-white shadow-2xl shadow-black rounded-lg p-6 relative"
     style={{ backgroundColor: color }}
     >
       {/* Top Bar with Back, Delete, Edit, and Save Buttons */}
@@ -112,7 +112,7 @@ const ListViewer = ({ listData }) => {
           <img
             src={imageUrl}
             alt="Note related"
-            className="w-9/12 h-auto object-cover rounded-xl mx-auto"
+            className="w-9/12 h-auto object-cover rounded-xl mx-auto shadow-lg shadow-black"
           />
         </div>
       )}

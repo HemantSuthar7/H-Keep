@@ -67,7 +67,7 @@ const LabelEditor = () => {
         <h2 className="text-lg sm:text-xl lg:text-2xl text-center font-medium">Edit Labels</h2> {/* Responsive text size */}
       </div>
 
-      <hr className="border-gray-400 mb-3" />
+      <hr className="border-gray-400 mb-10" />
 
       {newLabelMode ? (
         <div className="flex items-center mb-2">
