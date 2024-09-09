@@ -189,7 +189,7 @@ function NoteEditorForm({ noteData }) {
       <div className="w-full flex justify-center mt-4">
         <Button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+          className="bg-[#E1DABF] hover:bg-black text-black hover:text-white py-2 px-4 rounded shadow-md shadow-[#878375] border border-black duration-300"
         >
           {noteData ? "Update Note" : "Create Note"}
         </Button>

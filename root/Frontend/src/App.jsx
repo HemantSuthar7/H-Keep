@@ -45,7 +45,7 @@ function App() {
 
   return !loading ? (
     <div className="z-40 min-h-screen flex flex-col bg-[#E1DABF] scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-[#898369] scrollbar-track-[#E1DABF]  h-32 overflow-y-scroll">
-      <div className='w-full block text-white'>
+      <div className='w-full block text-black'>
         <Header/>
         <main className="flex-grow mt-20 z-0">
         <Outlet />

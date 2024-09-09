@@ -241,7 +241,7 @@ const ListEditorForm = ({ listData }) => {
   <div className="text-center">
     <button
       type="submit"
-      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition w-full sm:w-auto"
+      className="bg-[#E1DABF] hover:bg-black text-black hover:text-white py-2 px-4 rounded shadow-md shadow-[#878375] border border-black duration-300"
       disabled={isSubmitting}
     >
       {listData ? 'Update' : 'Create'}
