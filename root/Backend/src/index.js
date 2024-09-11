@@ -16,7 +16,7 @@ connectDB()
         console.log("ERROR",error)
         throw error
     })
-    app.listen(process.env.PORT || 4000 || 4500 || 5500, '0.0.0.0', ()=>{
+    app.listen(process.env.PORT || 4000 || 4500 || 5500, ()=>{
         console.log(`⚙⚙ Server is running on port ${process.env.PORT}`)
     })
     

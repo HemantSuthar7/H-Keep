@@ -169,21 +169,23 @@ function NoteEditorForm({ noteData }) {
           <Select
             label="Label"
             options={labels.map(label => label.labelName)} // Map to label names
+            isColorSelect={false}  
             className={`bg-gray-700 text-white ${errors.label ? 'border-red-500' : 'border-gray-600'}`}
             {...register("label")}
           />
           {errors.label && <p className="text-red-500">{errors.label.message}</p>}
         </div>
         <div className="mb-4">
-          <Select
-            label="Color"
-            options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
-                      "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
-                      "#4B443A", "#232427"]}
-            className={`bg-gray-700 text-white ${errors.color ? 'border-red-500' : 'border-gray-600'}`}
-            {...register("color")}
-          />
-          {errors.color && <p className="text-red-500">{errors.color.message}</p>}
+        <Select
+          label="Color"
+          options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+                    "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+                    "#4B443A", "#232427"]}
+          isColorSelect={true}  // Pass true when selecting colors
+          className={`bg-gray-700 text-white ${errors.color ? 'border-red-500' : 'border-gray-600'}`}
+          {...register("color")}
+        />
+        {errors.color && <p className="text-red-500">{errors.color.message}</p>}
         </div>
       </div>
       <div className="w-full flex justify-center mt-4">

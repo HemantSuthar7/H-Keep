@@ -220,6 +220,7 @@ const ListEditorForm = ({ listData }) => {
     <Select
       label="Label :"
       options={labels.map(label => label.labelName)}
+      isColorSelect={false}
       className="bg-gray-700 text-white"
       {...register('label')}
     />
@@ -227,14 +228,15 @@ const ListEditorForm = ({ listData }) => {
 
   {/* Color Selection */}
   <div className="mb-4">
-    <Select
-      label="Color:"
-      options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
-                "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
-                "#4B443A", "#232427"]} 
-      value={watchColor}
-      {...register('color')}
-    />
+  <Select
+          label="Color"
+          options={["#F5D3B0", "#256377", "#0C625D", "#264D3B", "#77172E", 
+                    "#284255", "#472E5B", "#6C394F", "#692B17", "#7C4A03", 
+                    "#4B443A", "#232427"]}
+          isColorSelect={true}  // Pass true when selecting colors
+          className={`bg-gray-700 text-white ${errors.color ? 'border-red-500' : 'border-gray-600'}`}
+          {...register("color")}
+        />
   </div>
 
   {/* Submit Button */}
