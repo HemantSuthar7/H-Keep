@@ -42,7 +42,7 @@ const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labe
         </div>
       )}
       <div className="flex-grow">
-        <h2 className="text-2xl font-semibold mb-2 md:text-xl sm:text-lg">{title}</h2>
+        <h2 className="text-2xl font-semibold mb-2 sm:text-xl md:text-2xl">{title}</h2>
         <hr className="border-gray-400 mb-2" />
         <ul>
           {displayedItems.map((item, index) => (

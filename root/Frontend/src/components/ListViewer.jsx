@@ -41,7 +41,8 @@ const ListViewer = ({ listData }) => {
       if (image) {
         formData.append('image', image);
       } else if (imageUrl) {
-        const response = await fetch(imageUrl);
+        const secureImageUrl = imageUrl.replace('http://', 'https://');
+        const response = await fetch(secureImageUrl, { mode: 'cors' });
         const blob = await response.blob();
         formData.append('image', blob, 'existing-image.jpg');
       }
