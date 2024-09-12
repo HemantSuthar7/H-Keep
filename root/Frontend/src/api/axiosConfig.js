@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: 'https://h-keep-backend.onrender/api/v1',
+  baseURL: 'https://h-keep-backend.onrender.com/api/v1',
   withCredentials: true,
   timeout: 10000,
   headers: {},
