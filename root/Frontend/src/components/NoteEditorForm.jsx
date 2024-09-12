@@ -95,7 +95,8 @@ function NoteEditorForm({ noteData }) {
       if (selectedImage) {
         finalData.append('image', selectedImage);
       } else if (noteData?.imageUrl && !data.image) {
-        const response = await fetch(noteData.imageUrl);
+        const secureImageUrl = noteData.imageUrl.replace('http://', 'https://');
+        const response = await fetch(secureImageUrl, { mode: 'cors' });
         const blob = await response.blob();
         finalData.append('image', blob, 'existing-image.jpg');
       }
