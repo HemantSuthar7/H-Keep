@@ -2,10 +2,9 @@ import axios from "axios";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: 'https://h-keep-backend.onrender.com/api/v1', // Update with your correct backend URL
-  withCredentials: true, // Ensures cookies are sent along with requests
-  timeout: 10000, // Request timeout set to 10 seconds
-  headers: {}, // Headers will be dynamically updated based on tokens
+  baseURL: 'https://h-keep-backend.onrender.com/api/v1', // Backend API URL
+  withCredentials: true, // Ensures cookies are sent with requests
+  timeout: 10000, // Request timeout (10 seconds)
 });
 
 // Interceptor to attach tokens to requests
@@ -19,16 +18,10 @@ axiosInstance.interceptors.request.use(
     }, {});
 
     const accessToken = cookies['AccessToken'];
-    const refreshToken = cookies['RefreshToken'];
-
-    // Attach the AccessToken to Authorization header
-    if (accessToken) {
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
-    }
     
-    // Attach the RefreshToken to custom header if needed
-    if (refreshToken) {
-      config.headers['x-refresh-token'] = refreshToken;
+    // Attach AccessToken either in the Authorization header or cookies
+    if (accessToken) {
+      config.headers['Authorization'] = `Bearer ${accessToken}`; // Middleware checks this
     }
 
     return config;
@@ -40,35 +33,32 @@ axiosInstance.interceptors.request.use(
 
 // Interceptor to handle token refresh on 401 responses
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
-    // Check if the error status is 401 (Unauthorized) and the request hasn't been retried yet
+
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // Send a request to refresh the token
+        // Refresh the token
         const response = await axios.post(
-          'https://h-keep-backend.onrender.com/api/v1/users/refresh-access-token', 
+          'https://h-keep-backend.onrender.com/api/v1/users/refresh-access-token', // Backend refresh token URL
           {},
           {
-            withCredentials: true,
+            withCredentials: true, // Ensures refresh token is sent with the request
           }
         );
 
         const { accessToken: newAccessToken } = response.data;
 
-        // Store the new access token in the cookie
+        // Store the new access token in cookies
         document.cookie = `AccessToken=${newAccessToken}; path=/;`;
 
-        // Update the original request with the new access token and retry it
+        // Update the Authorization header and retry the original request
         originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-        return axiosInstance(originalRequest);
+        return axiosInstance(originalRequest); // Retry the request with the new token
       } catch (refreshError) {
         console.error('Error refreshing token:', refreshError);
         return Promise.reject(refreshError);
