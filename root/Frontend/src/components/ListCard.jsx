@@ -5,7 +5,7 @@ import { deleteList } from '../methods/todoListMethods';
 
 
 const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labelId }) => { 
-  const maxItems = imageUrl ? 6 : 11; 
+  const maxItems = imageUrl ? 5 : 10; 
   const displayedItems = todoItems.slice(0, maxItems);
   const navigate = useNavigate();
   const listData = { title, todoItems, labelName, imageUrl, _id, color, labelId };
