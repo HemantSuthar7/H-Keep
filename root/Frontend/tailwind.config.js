@@ -8,6 +8,9 @@ export default {
     extend: {"animation": {
       shimmer: "shimmer 2s linear infinite"
     },
+      fontFamily: {
+        'space-grotesk': ['Space Grotesk', 'sans-serif'],
+      },
     "keyframes": {
       shimmer: {
         from: {
