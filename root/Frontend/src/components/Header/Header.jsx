@@ -16,7 +16,7 @@ function Header() {
         <nav className="flex items-center justify-between">
           <div className="mr-4">
             <Link to="/">
-              <Logo width="70px" />
+              <Logo />
             </Link>
           </div>
 
@@ -50,7 +50,7 @@ function Header() {
                   setMobileMenuOpen(false);
                   navigate('/Home');
                 }}
-                className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white"
+                className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white font-space-grotesk"
               >
                 Home
               </button>
@@ -64,7 +64,7 @@ function Header() {
                     setMobileMenuOpen(false);
                     navigate('/login');
                   }}
-                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white"
+                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white font-space-grotesk"
                 >
                   Login
                 </button>
@@ -79,7 +79,7 @@ function Header() {
                     setMobileMenuOpen(false);
                     navigate('/signup');
                   }}
-                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white"
+                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white font-space-grotesk"
                 >
                   Signup
                 </button>
@@ -94,7 +94,7 @@ function Header() {
                     setMobileMenuOpen(false);
                     navigate('/AddNote');
                   }}
-                  className="px-6 py-2 duration-300 bg-[#E1DABF] hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white flex items-center space-x-2 gap-2"
+                  className="px-6 py-2 duration-300 bg-[#E1DABF] hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white flex items-center space-x-2 gap-2 font-space-grotesk"
                 >
                 <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v268q-19-9-39-15.5t-41-9.5v-243H200v560h242q3 22 9.5 42t15.5 38H200Zm0-120v40-560 243-3 280Zm80-40h163q3-21 9.5-41t14.5-39H280v80Zm0-160h244q32-30 71.5-50t84.5-27v-3H280v80Zm0-160h400v-80H280v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40Zm-20-80h40v-100h100v-40H740v-100h-40v100H600v40h100v100Z"/></svg>
                   Add Note
@@ -110,7 +110,7 @@ function Header() {
                     setMobileMenuOpen(false);
                     navigate('/AddList');
                   }}
-                  className="px-6 py-2 duration-300 bg-[#E1DABF] hover:bg-zinc-800 rounded-xl text-black shadow-black shadow-md hover:text-white flex items-center space-x-2 gap-2"
+                  className="px-6 py-2 duration-300 bg-[#E1DABF] hover:bg-zinc-800 rounded-xl text-black shadow-black shadow-md hover:text-white flex items-center space-x-2 gap-2 font-space-grotesk"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#000000"><path d="M120-320v-80h280v80H120Zm0-160v-80h440v80H120Zm0-160v-80h440v80H120Zm520 480v-160H480v-80h160v-160h80v160h160v80H720v160h-80Z"/></svg>
                    Add List
@@ -126,7 +126,7 @@ function Header() {
                     setMobileMenuOpen(false);
                     navigate('/UserNotesAndLists');
                   }}
-                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white"
+                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white font-space-grotesk"
                 >
                   My Notes
                 </button>
@@ -141,7 +141,7 @@ function Header() {
                     setMobileMenuOpen(false);
                     navigate('/Label');
                   }}
-                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white"
+                  className="inline-block px-6 py-2 bg-[#E1DABF] duration-300 hover:bg-zinc-800 rounded-xl text-black shadow-md shadow-black hover:text-white font-space-grotesk"
                 >
                   My Labels
                 </button>
