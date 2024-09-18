@@ -33,7 +33,7 @@ function App() {
       } else {
         // No token exists, treat the user as logged out
         dispatch(logout());
-        navigate("/login")
+        navigate("/home")
       }
 
       setLoading(false);
