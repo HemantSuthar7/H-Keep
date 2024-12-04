@@ -115,7 +115,8 @@ function NoteEditorForm({ noteData }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap p-6 bg-[#232427] shadow-xl rounded-lg max-w-3xl mx-auto text-white mt-8 shadow-black">
+    <div className='p-4'>
+      <form onSubmit={handleSubmit(submit)} className="flex flex-wrap p-6 bg-[#232427] shadow-xl rounded-lg max-w-3xl mx-auto text-white mt-8 shadow-black">
       <div className="w-full md:w-2/3 px-2">
       <div className="flex justify-between items-center mb-4 w-full">
         <button className="mr-2" onClick={handleBackClick}>
@@ -198,6 +199,8 @@ function NoteEditorForm({ noteData }) {
         </Button>
       </div>
     </form>
+    </div>
+    
   );
 }
 

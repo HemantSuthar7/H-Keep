@@ -3,7 +3,7 @@ import {Container, NoteEditorForm} from "../components/index.js"
 
 function AddNote() {
   return (
-    <div className='py-4'>
+    <div className='py-8'>
         <Container>
             <NoteEditorForm />
         </Container>

@@ -10,7 +10,7 @@ const NoteCard = ({ title, textContent, label, labelId, imageUrl, color, id }) =
   // Function to filter out images from the parsed HTML content
   const removeImages = (domNode) => {
     if (domNode.name === 'img') {
-      return null; // Exclude images
+      return null; 
     }
   };
 
@@ -19,16 +19,17 @@ const NoteCard = ({ title, textContent, label, labelId, imageUrl, color, id }) =
   };
 
   const handleEditClick = (e) => {
-    e.stopPropagation(); // Prevent event propagation to the parent div
+    e.stopPropagation();
     navigate("/EditNote", { state: { noteData } });
   };
 
   const handleLabelClick = (e) => {
-    e.stopPropagation(); // Prevent event propagation to the parent div
+    e.stopPropagation(); 
     navigate("/LabelDataViewer", { state: { labelId, labelName : label } });
   };
 
   const handleDeleteClick = async () => {
+    e.stopPropagation();
     await deleteNote(id);
     navigate("/UserNotesAndLists");
   };

@@ -16,6 +16,7 @@ const ListCard = ({ title, todoItems = [], labelName, imageUrl, _id, color, labe
   };
 
   const handleDeleteClick = async () => {
+    e.stopPropagation();
     await deleteList(_id);
     navigate("/UserNotesAndLists");
   };
